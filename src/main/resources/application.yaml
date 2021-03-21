@@ -1,0 +1,24 @@
+bdk:
+  host: develop2.symphony.com
+
+  bot:
+    sessionAuthHost: develop2.symphony.com
+    sessionAuthPort: 443
+    keyAuthHost: develop2.symphony.com
+    keyAuthPort: 443
+    podHost: develop2.symphony.com
+    podPort: 443
+    agentHost: develop2.symphony.com
+    agentPort: 443
+    botUsername: devcertbot1356
+    botEmailAddress: devcertbot1356@bots.symphony.com
+    botPrivateKeyPath: certs/
+    botPrivateKeyName: devcertbot1356-private.pem
+    authenticationFilterUrlPattern: /secure/
+    username: devcertbot1356
+    privateKey:
+      path: rsa/privatekey.pem
+
+logging:
+  level:
+    com.symphony: debug
