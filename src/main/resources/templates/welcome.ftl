@@ -1,3 +1,3 @@
 <messageML>
-    Welcome ${name}! You can start by typing '/gif' command in the chat.
+    Welcome ${name}! You can start by typing '/help' command in the chat.
 </messageML>

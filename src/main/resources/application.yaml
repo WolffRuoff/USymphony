@@ -13,11 +13,11 @@ bdk:
     botUsername: devcertbot1356
     botEmailAddress: devcertbot1356@bots.symphony.com
     botPrivateKeyPath: certs/
-    botPrivateKeyName: devcertbot1356-private.pem
+    botPrivateKeyName: privatekey-og.pem
     authenticationFilterUrlPattern: /secure/
     username: devcertbot1356
     privateKey:
-      path: rsa/privatekey.pem
+      path: rsa/privatekey-og.pem
 
 logging:
   level:
