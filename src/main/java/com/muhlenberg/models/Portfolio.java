@@ -29,10 +29,10 @@ public class Portfolio {
         }
         this.rebalancePortfolio();
     }
-    public void removeAsset(String n, double am) {
+    public void removeAsset(Stock n, Double am) {
         //Make sure asset exists
         if(this.assets.containsKey(n)){
-            if(Double.compare(am, this.assets.get(n)) ==0 ) {
+            if(Double.compare(am, this.assets.get(n)) >= 0 ) {
                 this.assets.remove(n);
             }
             else{
