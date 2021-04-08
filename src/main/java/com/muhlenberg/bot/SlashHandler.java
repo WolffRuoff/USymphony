@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 import static java.util.Collections.singletonMap;
 
 @Component
-public class HelpSlashHandler {
+public class SlashHandler {
 
   private final MessageService messageService;
-  private final Template template;
+  private Template template;
 
-  public HelpSlashHandler(MessageService messageService) {
+  public SlashHandler(MessageService messageService) {
     this.messageService = messageService;
     this.template = messageService.templates().newTemplateFromClasspath("/templates/help.ftl");
   }
@@ -24,5 +24,22 @@ public class HelpSlashHandler {
   public void onSlashHelp(CommandContext context) {
     final String userEmail = context.getInitiator().getUser().getEmail();
     this.messageService.send(context.getStreamId(), Message.builder().template(this.template, singletonMap("name", userEmail)).build());
+  }
+
+  @Slash(value = "/portfolio", mentionBot = true)
+  public void onSlashPortfolio(CommandContext context) {
+    long userID = context.getInitiator().getUser().getUserId();
+    String commandParts[] = context.getTextContent().trim().split(" ");
+
+    if (commandParts.length==2) {
+      final String userEmail = context.getInitiator().getUser().getEmail();
+      this.template = messageService.templates().newTemplateFromClasspath("/templates/help.ftl");
+      this.messageService.send(context.getStreamId(), Message.builder().template(this.template, singletonMap("name", userEmail)).build());
+    }
+    else {
+      
+    }
+    
+    
   }
 }
