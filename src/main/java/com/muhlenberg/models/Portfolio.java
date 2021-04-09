@@ -1,9 +1,12 @@
 package com.muhlenberg.models;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.symphony.bdk.gen.api.model.V4User;
 
 import java.lang.Double;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -17,6 +20,16 @@ public class Portfolio {
     private HashMap<V4User, Double> clientBreakdown; //userID, client
     private HashMap<Stock, Double> assets;
     //private Map<Float, portHistory> history;
+
+
+    public Portfolio(String name, float size, Double portionLiquid, HashMap<V4User,Double> clientBreakdown, HashMap<Stock,Double> assets) {
+        this.name = name;
+        this.size = size;
+        this.portionLiquid = portionLiquid;
+        this.clientBreakdown = clientBreakdown;
+        this.assets = assets;
+    }
+
 
     public void addAsset(Stock n, Double am) {
         //If asset already exists add
@@ -46,5 +59,52 @@ public class Portfolio {
     }
     private void rebalancePortfolio(){
         //rebalances portfolio
+    }
+    //Absolutely critical to override and return stock array. DO NOT DELETE
+    public Stock[] getAssets() {
+        int i = 0;
+        Stock[] arr  = new Stock[assets.size()];
+
+        for (Stock key : assets.keySet()) {
+            arr[i] = key;
+            i++;
+        }   
+        return arr;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public float getSize() {
+        return this.size;
+    }
+
+    public void setSize(float size) {
+        this.size = size;
+    }
+
+    public Double getPortionLiquid() {
+        return this.portionLiquid;
+    }
+
+    public void setPortionLiquid(Double portionLiquid) {
+        this.portionLiquid = portionLiquid;
+    }
+
+    public HashMap<V4User,Double> getClientBreakdown() {
+        return this.clientBreakdown;
+    }
+
+    public void setClientBreakdown(HashMap<V4User,Double> clientBreakdown) {
+        this.clientBreakdown = clientBreakdown;
+    }
+
+    public void setAssets(HashMap<Stock,Double> assets) {
+        this.assets = assets;
     }
 }

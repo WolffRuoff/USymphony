@@ -1,0 +1,49 @@
+<messageML>
+
+
+<br/>
+    
+    <h2> Portfolio Summary: </h2>
+    <h1> j </h1>
+    <table>
+            
+        <thead>
+                    
+        <tr>
+                            
+            <td>Ticker:</td>
+                            
+            <td>Company Name:</td>
+                            
+            <td>Price:</td>
+                            
+            <td>Daily Change:</td>
+                        
+        </tr>
+                
+        </thead>
+
+        <tbody>
+            
+            {{#each assets}}
+            
+            <tr>            
+                <td><cash tag="{{symbol}}"/></td>
+                <td> {{companyName}} </td>
+                <td> {{latestPrice}} </td>
+                <td> {{#if (isPos change)}} <emoji shortcode = "chart_with_upwards_trend"/>  <span style="color:green;"> {{change}}% </span> </td>
+                        {{else}}  {{#if (isNeg change)}}  <emoji shortcode = "chart_with_downwards_trend"/>  <span style="color:red;"> {{change}}% </span> </td>
+                            {{else}} 
+                                No Change </td>
+                            {{/if}}
+                        {{/if}}   
+            </tr>    
+
+            {{/each}}
+
+        </tbody>
+
+    </table>
+
+    <p> j </p>
+</messageML>
