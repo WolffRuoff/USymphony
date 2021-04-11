@@ -1,12 +1,12 @@
 package com.muhlenberg.models;
 import java.util.HashMap;
-import java.util.Map;
-
 import com.symphony.bdk.gen.api.model.V4User;
 
 import java.lang.Double;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -30,7 +30,57 @@ public class Portfolio {
         this.assets = assets;
     }
 
+    public Stock[] getBottom5() {
+        ArrayList<Stock> list = new ArrayList<Stock>();
+        for (Stock key : assets.keySet()) {
+            list.add(key);
+        }
+        Collections.sort(list, new Comparator<Stock>() {
+            @Override
+            public int compare(Stock c1, Stock c2) {
+                return Double.compare(c1.getChange(), c2.getChange());
+            }});
+        
+        if (list.size() < 5) {
+            Stock[] arr = new Stock[list.size()];
+            arr = list.toArray(arr);
+            return arr;
+        }
+        else {
+            Stock[] arr = new Stock[5];
+            for (int i = 0; i < 5; i++) {
+                arr[i] = list.get(i);
+            }
+            return arr;
+        }
+    }
 
+    //change so that top movers are not also in bottom movers.
+    public Stock[] getTop5() {
+                ArrayList<Stock> list = new ArrayList<Stock>();
+        for (Stock key : assets.keySet()) {
+            list.add(key);
+        }
+        //Order is swapped in compare to get lower stocks
+        Collections.sort(list, new Comparator<Stock>() {
+            @Override
+            public int compare(Stock c1, Stock c2) {
+                return Double.compare(c2.getChange(), c1.getChange());
+            }});
+        
+        if (list.size() < 5) {
+            Stock[] arr = new Stock[list.size()];
+            arr = list.toArray(arr);
+            return arr;
+        }
+        else {
+            Stock[] arr = new Stock[5];
+            for (int i = 0; i < 5; i++) {
+                arr[i] = list.get(i);
+            }
+            return arr;
+        }
+    }
     public void addAsset(Stock n, Double am) {
         //If asset already exists add
         if(this.assets.containsKey(n)){
@@ -72,7 +122,7 @@ public class Portfolio {
         return arr;
     }
 
-    public void createClient(V4User user, Double am) {
+    public void addClient(V4User user, Double am) {
         // Make sure client doesn't exist
         if (!this.clientBreakdown.containsKey(user)) {
             this.clientBreakdown.put(user, am);

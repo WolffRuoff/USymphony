@@ -66,18 +66,27 @@ public class SummarySlashHandler {
     
     Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2);
     
-    ObjectMapper Obj = new ObjectMapper();
- 
-  
     try {
 
-      String jsonString = Obj.writerWithDefaultPrettyPrinter().writeValueAsString(p);
-  
-      
-  
-      JsonNode jsonNode = new ObjectMapper().readValue(jsonString, JsonNode.class);
-  
-      Context c = Context
+      Context c = objectToContext(new Summary(p));
+
+      this.messageService.send(context.getStreamId(), template.apply(c));
+
+    } catch (JsonProcessingException e1) {
+      System.out.println("Json Issue");
+      e1.printStackTrace();
+    } catch (IOException e) {
+
+      System.out.println("IOException");
+      e.printStackTrace();
+    }   
+  }
+
+  public Context objectToContext(Object object) throws JsonProcessingException {
+    ObjectMapper obj = new ObjectMapper();
+    String jsonString = obj.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+    JsonNode jsonNode = new ObjectMapper().readValue(jsonString, JsonNode.class);
+    Context c = Context
               .newBuilder(jsonNode)
               .resolver(JsonNodeValueResolver.INSTANCE,
                       JavaBeanValueResolver.INSTANCE,
@@ -87,17 +96,7 @@ public class SummarySlashHandler {
               )
               .build();
 
-      this.messageService.send(context.getStreamId(), template.apply(c));
-
-    } catch (JsonProcessingException e1) {
-      // TODO Auto-generated catch block
-      System.out.println("Json Issue");
-      e1.printStackTrace();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      System.out.println("IOException");
-      e.printStackTrace();
-    }   
+    return c;
   }
 }
 

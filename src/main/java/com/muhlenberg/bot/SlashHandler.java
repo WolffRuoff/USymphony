@@ -27,7 +27,7 @@ public class SlashHandler {
     this.messageService = messageService;
     this.loader = new ClassPathTemplateLoader();
     loader.setPrefix("/templates");
-    loader.setSuffix(".handlebars");
+    loader.setSuffix(".hbs");
     this.handlebars = new Handlebars(loader);
     this.template = handlebars.compile("help");
     //this.template = messageService.templates().newTemplateFromClasspath("/templates/help.ftl");

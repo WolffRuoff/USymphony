@@ -3,8 +3,8 @@
 
 <br/>
     
-    <h2> Portfolio Summary: </h2>
-    <h1> j </h1>
+    <h2> Portfolio Summary: {{name}}</h2>
+    <h3> Top 5 Gains:</h3>
     <table>
             
         <thead>
@@ -25,7 +25,47 @@
 
         <tbody>
             
-            {{#each assets}}
+            {{#each top10Stocks}}
+            
+            <tr>            
+                <td><cash tag="{{symbol}}"/></td>
+                <td> {{companyName}} </td>
+                <td> {{latestPrice}} </td>
+                <td> {{#if (isPos change)}} <emoji shortcode = "chart_with_upwards_trend"/>  <span style="color:green;"> {{change}}% </span> </td>
+                        {{else}}  {{#if (isNeg change)}}  <emoji shortcode = "chart_with_downwards_trend"/>  <span style="color:red;"> {{change}}% </span> </td>
+                            {{else}} 
+                                No Change </td>
+                            {{/if}}
+                        {{/if}}   
+            </tr>    
+
+            {{/each}}
+
+        </tbody>
+
+    </table>
+    <h3> Top 5 Losers:</h3>
+    <table>
+            
+        <thead>
+                    
+        <tr>
+                            
+            <td>Ticker:</td>
+                            
+            <td>Company Name:</td>
+                            
+            <td>Price:</td>
+                            
+            <td>Daily Change:</td>
+                        
+        </tr>
+                
+        </thead>
+
+        <tbody>
+            
+            {{#each bottom10Stocks}}
             
             <tr>            
                 <td><cash tag="{{symbol}}"/></td>
