@@ -1,0 +1,17 @@
+<h2>Hello
+    <mention email="${name}" />. Here are some of the commands that you will be using:
+</h2>
+<p>Click on the command to view more info about it</p>
+<ul style="list-style-type: none;">
+    {{#each commands}}
+    <li>
+        <card accent="tempo-bg-color--blue">
+            <header>{{name}}</header>
+
+            <body>
+                {{descriptions}}
+            </body>
+        </card>
+    </li>
+    {{/each}}
+</ul>

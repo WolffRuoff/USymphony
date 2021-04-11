@@ -72,6 +72,59 @@ public class Portfolio {
         return arr;
     }
 
+    public void createClient(V4User user, Double am) {
+        // Make sure client doesn't exist
+        if (!this.clientBreakdown.containsKey(user)) {
+            this.clientBreakdown.put(user, am);
+            updateSize(am);
+        } else {
+            // Client already exists!
+        }
+    }
+
+    public void removeClient(V4User user) {
+        // Make sure client exists
+        if (this.clientBreakdown.containsKey(user)) {
+            updateSize(this.clientBreakdown.get(user) * -1);
+            this.clientBreakdown.remove(user);
+        } else {
+            // Client doesn't exist!
+        }
+    }
+
+    public void addToClient(V4User user, Double am) {
+        // Make sure client exists
+        if (this.clientBreakdown.containsKey(user)) {
+            this.clientBreakdown.put(user, Double.sum(am, this.clientBreakdown.get(user)));
+            updateSize(am);
+        } else {
+            // Client doesn't exist!
+        }
+    }
+
+    public void removeFromClient(V4User user, Double am) {
+        // Make sure client exists
+        if (this.clientBreakdown.containsKey(user)) {
+            this.clientBreakdown.put(user, this.clientBreakdown.get(user) - am );
+            if (this.clientBreakdown.get(user) > am) {
+                updateSize(am * -1);
+            }
+            else if (this.clientBreakdown.get(user) <= am) {
+                removeClient(user);
+            }
+        } else {
+            // Client doesn't exist!
+        }
+    }
+
+    private void updateSize(Double am) {
+        this.size += am;
+    }
+
+    public Double getClientWorth(V4User user) {
+        return this.clientBreakdown.get(user);
+    }
+
     public String getName() {
         return this.name;
     }

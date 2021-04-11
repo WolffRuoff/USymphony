@@ -1,0 +1,16 @@
+{
+    "commands": {
+        "name": [
+            "/buy",
+            "/sell",
+            "/portfolio",
+            "/otherStuff"
+        ],
+        "descriptions": [
+            "This is the buy command description",
+            "This is the sell command description",
+            "This is the portfolio command description",
+            "This is the otherStuff command description"
+        ]
+    }
+}
