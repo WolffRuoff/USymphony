@@ -13,16 +13,16 @@ import lombok.Setter;
 
 @RequiredArgsConstructor
 @Getter
-public class Portfolio {
+public class Portfolio implements java.io.Serializable{
     private @Setter String name;
     private float size;
     private Double portionLiquid;
-    private HashMap<V4User, Double> clientBreakdown; //userID, client
+    private HashMap<Long, Double> clientBreakdown; //userID, client
     private HashMap<Stock, Double> assets;
     //private Map<Float, portHistory> history;
 
 
-    public Portfolio(String name, float size, Double portionLiquid, HashMap<V4User,Double> clientBreakdown, HashMap<Stock,Double> assets) {
+    public Portfolio(String name, float size, Double portionLiquid, HashMap<Long,Double> clientBreakdown, HashMap<Stock,Double> assets) {
         this.name = name;
         this.size = size;
         this.portionLiquid = portionLiquid;
@@ -123,9 +123,10 @@ public class Portfolio {
     }
 
     public void addClient(V4User user, Double am) {
+        Long userId = user.getUserId();
         // Make sure client doesn't exist
-        if (!this.clientBreakdown.containsKey(user)) {
-            this.clientBreakdown.put(user, am);
+        if (!this.clientBreakdown.containsKey(userId)) {
+            this.clientBreakdown.put(userId, am);
             updateSize(am);
         } else {
             // Client already exists!
@@ -133,19 +134,21 @@ public class Portfolio {
     }
 
     public void removeClient(V4User user) {
+        Long userId = user.getUserId();
         // Make sure client exists
-        if (this.clientBreakdown.containsKey(user)) {
-            updateSize(this.clientBreakdown.get(user) * -1);
-            this.clientBreakdown.remove(user);
+        if (this.clientBreakdown.containsKey(userId)) {
+            updateSize(this.clientBreakdown.get(userId) * -1);
+            this.clientBreakdown.remove(userId);
         } else {
             // Client doesn't exist!
         }
     }
 
     public void addToClient(V4User user, Double am) {
+        Long userId = user.getUserId();
         // Make sure client exists
-        if (this.clientBreakdown.containsKey(user)) {
-            this.clientBreakdown.put(user, Double.sum(am, this.clientBreakdown.get(user)));
+        if (this.clientBreakdown.containsKey(userId)) {
+            this.clientBreakdown.put(userId, Double.sum(am, this.clientBreakdown.get(userId)));
             updateSize(am);
         } else {
             // Client doesn't exist!
@@ -153,13 +156,14 @@ public class Portfolio {
     }
 
     public void removeFromClient(V4User user, Double am) {
+        Long userId = user.getUserId();
         // Make sure client exists
-        if (this.clientBreakdown.containsKey(user)) {
-            this.clientBreakdown.put(user, this.clientBreakdown.get(user) - am );
-            if (this.clientBreakdown.get(user) > am) {
+        if (this.clientBreakdown.containsKey(userId)) {
+            this.clientBreakdown.put(userId, this.clientBreakdown.get(userId) - am );
+            if (this.clientBreakdown.get(userId) > am) {
                 updateSize(am * -1);
             }
-            else if (this.clientBreakdown.get(user) <= am) {
+            else if (this.clientBreakdown.get(userId) <= am) {
                 removeClient(user);
             }
         } else {
@@ -172,7 +176,8 @@ public class Portfolio {
     }
 
     public Double getClientWorth(V4User user) {
-        return this.clientBreakdown.get(user);
+        Long userId = user.getUserId();
+        return this.clientBreakdown.get(userId);
     }
 
     public String getName() {
@@ -199,11 +204,11 @@ public class Portfolio {
         this.portionLiquid = portionLiquid;
     }
 
-    public HashMap<V4User,Double> getClientBreakdown() {
+    public HashMap<Long,Double> getClientBreakdown() {
         return this.clientBreakdown;
     }
 
-    public void setClientBreakdown(HashMap<V4User,Double> clientBreakdown) {
+    public void setClientBreakdown(HashMap<Long,Double> clientBreakdown) {
         this.clientBreakdown = clientBreakdown;
     }
 

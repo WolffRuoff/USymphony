@@ -1,12 +1,6 @@
 package com.muhlenberg.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-
-//@Data
-//@AllArgsConstructor
-public class Stock {
+public class Stock implements java.io.Serializable{
     private String symbol;
     private String companyName;
     private double latestPrice;
