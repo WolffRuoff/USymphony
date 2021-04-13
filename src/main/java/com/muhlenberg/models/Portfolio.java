@@ -224,4 +224,7 @@ public class Portfolio implements java.io.Serializable{
     public void setAssets(HashMap<Stock,Double> assets) {
         this.assets = assets;
     }
+    public HashMap<Stock,Double> getAssetList() {
+        return this.assets;
+    }
 }

@@ -27,7 +27,7 @@ public class Database {
     /**
      * Connect to a sample database
      */
-    private Connection connect() {
+    private static Connection connect() {
         // SQLite connection string
         String url = "jdbc:sqlite:src/main/resources/db/bergbot.db";
         Connection conn = null;
@@ -39,7 +39,7 @@ public class Database {
         return conn;
     }
 
-    public void createNewTable() {
+    public static void createNewTable() {
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS portfoliolist (\n" + "	userid integer NOT NULL,\n"
                 + "	portfolio blob NOT NULL);";
@@ -52,11 +52,23 @@ public class Database {
         }
     }
 
-    public void addPortfolio(V4User userID, Portfolio port) {
+    public static void addPortfolio(V4User userID, Portfolio port) {
+        //Make sure portfolio doesn't have existing name
+        Portfolio portfol = getPortfolio(userID, port.getName());
+        int i = 0;
+        //If portfolio of same name exists, append i to the name of the new one
+        while (portfol != null) {
+            i++;
+            portfol = getPortfolio(userID, port.getName() + i);
+        }
+        if (i > 0) {
+            port.setName(port.getName() + i);
+        }
+
         // SQL statement for adding a portfolio
         String sql = "INSERT INTO portfoliolist (userid, portfolio) VALUES(?,?)";
 
-        try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, userID.getUserId());
             pstmt.setBytes(2, makeByte(port));
             pstmt.executeUpdate();
@@ -65,10 +77,10 @@ public class Database {
         }
     }
 
-    public ArrayList<Portfolio> getPortfolioList(V4User user) {
+    public static ArrayList<Portfolio> getPortfolioList(V4User user) {
         String sql = "SELECT portfolio FROM portfoliolist WHERE userid = ?";
 
-        try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, user.getUserId());
             ResultSet rs = pstmt.executeQuery();
@@ -86,7 +98,19 @@ public class Database {
         return null;
     }
 
-    public byte[] makeByte(Portfolio port) {
+    public static Portfolio getPortfolio(V4User user, String name) {
+        ArrayList<Portfolio> ports = getPortfolioList(user);
+        int size = ports.size();
+
+        for(int i = 0; i < size; i++) {
+            if (ports.get(i).getName().equals(name)) {
+                return ports.get(i);
+            }
+        }
+        return null;
+    }
+
+    public static byte[] makeByte(Portfolio port) {
         try {
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -101,7 +125,7 @@ public class Database {
         return null;
     }
 
-    public Portfolio readBytes(byte[] data) {
+    public static Portfolio readBytes(byte[] data) {
         try {
             ByteArrayInputStream baip = new ByteArrayInputStream(data);
             ObjectInputStream ois = new ObjectInputStream(baip);
@@ -134,10 +158,9 @@ public class Database {
         h2.put(s3, 17d);
 
         Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2);
-        Database db = new Database();
-        db.createNewTable();
-        db.addPortfolio(user, p);
-        ArrayList<Portfolio> portlist = db.getPortfolioList(user);
+        Database.createNewTable();
+        Database.addPortfolio(user, p);
+        ArrayList<Portfolio> portlist = Database.getPortfolioList(user);
         System.out.println(portlist.get(0).getName());
     }
 }

@@ -42,8 +42,7 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
 
     final Portfolio p = new Portfolio(name, clients);
 
-    final Database db = new Database();
-    db.addPortfolio(context.getInitiator().getUser(), p);
+    Database.addPortfolio(context.getInitiator().getUser(), p);
 
     final String message = "<messageML>Created '" + name + "' Portfolio</messageML>";
     this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
