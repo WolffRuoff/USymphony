@@ -55,8 +55,8 @@ public class SummarySlashHandler {
     Stock s = new Stock("AAPL", "Apple", 125.02, 0.0, true);
     Stock s2 = new Stock("XOM", "Exxon Mobil", 15.21, -.15, true);
     Stock s3 = new Stock("TMUS", "T-Mobile", 156, 1.15, true);
-    HashMap<V4User, Double> h = new HashMap<V4User, Double>();
-    h.put(context.getInitiator().getUser(), .215);
+    HashMap<Long, Double> h = new HashMap<Long, Double>();
+    h.put(context.getInitiator().getUser().getUserId(), .215);
     
     
     HashMap<Stock, Double> h2 = new HashMap<Stock, Double>();

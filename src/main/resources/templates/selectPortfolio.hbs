@@ -1,0 +1,20 @@
+<messageML>
+    <h2>Please select a portfolio or create a new one</h2>
+    <form id="selectPortfolio">
+        <table>
+
+            <tbody>
+                <tr>
+                    <td>Create New Portfolio</td>
+                    <td><button type="action" name="new-portfolio">SELECT</button></td>
+                </tr>
+                {{#each this}}
+                <tr>
+                    <td>{{ name }}</td>
+                    <td><button type="action" name="table-rowx">SELECT</button> </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </form>
+</messageML>

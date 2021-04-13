@@ -1,7 +1,11 @@
 <messageML>
     <h2>Create a New Portfolio</h2>
 
-    <form id="create-Portfolio">
-        <person-selector name="person-selector" placeholder="Type a person's name"/>
+    <form id="create-portfolio">
+        <person-selector name="client-selector" placeholder="Type the clients' names" />
+        <text-field name="name" placeholder="Input the portfolio name..." required="true" />
+
+        <button name="submit" type="action">Create Portfolio</button>
+        <button type="reset">Reset Data</button>
     </form>
 </messageML>

@@ -1,6 +1,7 @@
 package com.muhlenberg.models;
 
 public class Stock implements java.io.Serializable{
+    private static final long serialVersionUID = 6529685098267757690L;
     private String symbol;
     private String companyName;
     private double latestPrice;

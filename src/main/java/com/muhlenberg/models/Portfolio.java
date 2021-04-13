@@ -1,5 +1,6 @@
 package com.muhlenberg.models;
 import java.util.HashMap;
+
 import com.symphony.bdk.gen.api.model.V4User;
 
 import java.lang.Double;
@@ -14,6 +15,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 public class Portfolio implements java.io.Serializable{
+    private static final long serialVersionUID = 6529685098267757690L;
     private @Setter String name;
     private float size;
     private Double portionLiquid;
@@ -28,6 +30,13 @@ public class Portfolio implements java.io.Serializable{
         this.portionLiquid = portionLiquid;
         this.clientBreakdown = clientBreakdown;
         this.assets = assets;
+    }
+    public Portfolio(String name, HashMap<Long,Double> clients) {
+        this.name = name;
+        this.size = 0;
+        this.portionLiquid = 0.0;
+        this.clientBreakdown = clients;
+        this.assets = new HashMap<Stock,Double>();
     }
 
     public Stock[] getBottom5() {

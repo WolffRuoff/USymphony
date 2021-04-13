@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.stereotype.Component;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.Handlebars;
@@ -25,8 +26,6 @@ import com.github.jknack.handlebars.context.MapValueResolver;
 import com.github.jknack.handlebars.context.MethodValueResolver;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-
-import java.io.IOException;
 
 @Component
 public class SlashHandler {
@@ -47,7 +46,7 @@ public class SlashHandler {
 
   @Slash(value = "/help", mentionBot = true)
   public void onSlashHelp(CommandContext context) throws IOException {
-    final String userEmail = context.getInitiator().getUser().getEmail();      
+    final String userEmail = context.getInitiator().getUser().getEmail();
     this.messageService.send(context.getStreamId(), this.template.apply(userEmail));
   }
 
@@ -56,31 +55,66 @@ public class SlashHandler {
     long userID = context.getInitiator().getUser().getUserId();
     String commandParts[] = context.getTextContent().trim().split(" ");
 
-    if (commandParts.length == 2) {
+    if (commandParts.length == 5) {
       final String userEmail = context.getInitiator().getUser().getEmail();
       this.template = handlebars.compile("buy1");
-      //this.template = messageService.templates().newTemplateFromClasspath("/templates/help.ftl");
-      //this.messageService.send(context.getStreamId(),
-          //Message.builder().template(this.template, singletonMap("name", userEmail)).build());
+      // this.template =
+      // messageService.templates().newTemplateFromClasspath("/templates/help.ftl");
+      // this.messageService.send(context.getStreamId(),
+      // Message.builder().template(this.template, singletonMap("name",
+      // userEmail)).build());
     } else {
 
     }
 
   }
 
+  @Slash(value = "/create", mentionBot = true)
+  public void onSlashCreate(CommandContext context) {
+    V4User user = context.getInitiator().getUser();
+
+    try {
+      this.template = handlebars.compile("createPortfolio");
+      System.out.println("tada");
+      this.messageService.send(context.getStreamId(), template.apply(user));
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+    } catch (IOException e1) {
+      e1.printStackTrace();
+    }
+  }
+
   @Slash(value = "/portfolio", mentionBot = true)
   public void onSlashPortfolio(CommandContext context) {
-    long userID = context.getInitiator().getUser().getUserId();
+    V4User user = context.getInitiator().getUser();
     String commandParts[] = context.getTextContent().trim().split(" ");
+    if (commandParts.length == 5) {
+      Database db = new Database();
+      ArrayList<Portfolio> portfolioList = db.getPortfolioList(user);
 
-    if (commandParts.length == 2) {
-      final String userEmail = context.getInitiator().getUser().getEmail();
-      //this.template = messageService.templates().newTemplateFromClasspath("/templates/help.ftl");
-      //this.messageService.send(context.getStreamId(),
-          //Message.builder().template(this.template, singletonMap("name", userEmail)).build());
+      try {
+        Context c = objectToContext(portfolioList);
+        System.out.println(c);
+        this.template = handlebars.compile("selectPortfolio");
+        this.messageService.send(context.getStreamId(), template.apply(portfolioList));
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      } catch (IOException e1) {
+        e1.printStackTrace();
+      }
     } else {
 
     }
 
+  }
+
+  public Context objectToContext(Object object) throws JsonProcessingException {
+    ObjectMapper obj = new ObjectMapper();
+    String jsonString = obj.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+    JsonNode jsonNode = new ObjectMapper().readValue(jsonString, JsonNode.class);
+    Context c = Context.newBuilder(jsonNode).resolver(JsonNodeValueResolver.INSTANCE, JavaBeanValueResolver.INSTANCE,
+        FieldValueResolver.INSTANCE, MapValueResolver.INSTANCE, MethodValueResolver.INSTANCE).build();
+
+    return c;
   }
 }

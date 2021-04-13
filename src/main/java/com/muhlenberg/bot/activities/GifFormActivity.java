@@ -1,4 +1,4 @@
-package com.muhlenberg.bot;
+package com.muhlenberg.bot.activities;
 
 import com.symphony.bdk.core.activity.ActivityMatcher;
 import com.symphony.bdk.core.activity.form.FormReplyActivity;
@@ -27,6 +27,7 @@ public class GifFormActivity extends FormReplyActivity<FormReplyContext> {
 
   @Override
   public void onActivity(FormReplyContext context) {
+    System.out.println("yay");
     final String category = context.getFormValue("category");
     final String message = "<messageML>Received category '" + category + "'</messageML>";
     this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());

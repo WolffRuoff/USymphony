@@ -18,7 +18,6 @@ import com.muhlenberg.models.Portfolio;
 import com.muhlenberg.models.Stock;
 import com.symphony.bdk.gen.api.model.V4User;
 
-import org.parboiled.matchers.TestMatcher;
 
 /**
  *
@@ -30,7 +29,7 @@ public class Database {
      */
     private Connection connect() {
         // SQLite connection string
-        String url = "jdbc:sqlite:src/main/resources/db/sample.db";
+        String url = "jdbc:sqlite:src/main/resources/db/bergbot.db";
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url);
@@ -54,11 +53,10 @@ public class Database {
     }
 
     public void addPortfolio(V4User userID, Portfolio port) {
-        // SQL statement for creating a new table
+        // SQL statement for adding a portfolio
         String sql = "INSERT INTO portfoliolist (userid, portfolio) VALUES(?,?)";
 
-        try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) { // create a new
-
+        try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, userID.getUserId());
             pstmt.setBytes(2, makeByte(port));
             pstmt.executeUpdate();
@@ -72,22 +70,20 @@ public class Database {
 
         try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // set the value
-            
             pstmt.setLong(1, user.getUserId());
             ResultSet rs = pstmt.executeQuery();
 
-            // loop through the result set
+            // Convert ResultSet to an ArrayList
             ArrayList<Portfolio> portList = new ArrayList<Portfolio>();
             while (rs.next()) {
-                //System.out.println(readBytes(rs.getBytes("portfolio")).getName());
+                // System.out.println(readBytes(rs.getBytes("portfolio")).getName());
                 portList.add(readBytes(rs.getBytes("portfolio")));
             }
             return portList;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return null;    
+        return null;
     }
 
     public byte[] makeByte(Portfolio port) {
@@ -97,20 +93,20 @@ public class Database {
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(port);
             byte[] portfolioAsBytes = baos.toByteArray();
-            ByteArrayInputStream bais = new ByteArrayInputStream(portfolioAsBytes);
+            //ByteArrayInputStream bais = new ByteArrayInputStream(portfolioAsBytes);
             return portfolioAsBytes;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
+
     public Portfolio readBytes(byte[] data) {
         try {
             ByteArrayInputStream baip = new ByteArrayInputStream(data);
             ObjectInputStream ois = new ObjectInputStream(baip);
             Portfolio port = (Portfolio) ois.readObject();
             return port;
-    
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -128,7 +124,8 @@ public class Database {
         Stock s3 = new Stock("TMUS", "T-Mobile", 156, 1.15, true);
         HashMap<Long, Double> h = new HashMap<Long, Double>();
         V4User user = new V4User();
-        user.setUserId((Long)(long)1234566789);
+        Long uId = Long.valueOf(349026222357189L);
+        user.setUserId(uId);
         h.put(user.getUserId(), .215);
 
         HashMap<Stock, Double> h2 = new HashMap<Stock, Double>();
@@ -138,9 +135,9 @@ public class Database {
 
         Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2);
         Database db = new Database();
-        //db.createNewTable();
-        //db.addPortfolio(user, p);
+        db.createNewTable();
+        db.addPortfolio(user, p);
         ArrayList<Portfolio> portlist = db.getPortfolioList(user);
-        System.out.println(portlist);
+        System.out.println(portlist.get(0).getName());
     }
 }
