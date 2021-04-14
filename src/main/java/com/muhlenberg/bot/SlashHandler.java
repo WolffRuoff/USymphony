@@ -87,12 +87,8 @@ public class SlashHandler {
     V4User user = context.getInitiator().getUser();
     String commandParts[] = context.getTextContent().trim().split(" ");
     if (commandParts.length == 5) {
-      Database db = new Database();
-      ArrayList<Portfolio> portfolioList = db.getPortfolioList(user);
-
+      ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
       try {
-        Context c = objectToContext(portfolioList);
-        System.out.println(c);
         this.template = handlebars.compile("selectPortfolio");
         this.messageService.send(context.getStreamId(), template.apply(portfolioList));
       } catch (JsonProcessingException e) {

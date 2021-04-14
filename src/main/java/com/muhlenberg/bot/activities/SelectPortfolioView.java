@@ -17,11 +17,11 @@ import com.symphony.bdk.gen.api.model.V4User;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SelectPortfolio extends FormReplyActivity<FormReplyContext> {
+public class SelectPortfolioView extends FormReplyActivity<FormReplyContext> {
 
   private final MessageService messageService;
 
-  public SelectPortfolio(MessageService messageService) {
+  public SelectPortfolioView(MessageService messageService) {
     this.messageService = messageService;
   }
 
@@ -40,7 +40,6 @@ public class SelectPortfolio extends FormReplyActivity<FormReplyContext> {
     Handlebars handlebars = new Handlebars(loader);
     Template template;
     String choice = context.getFormValue("portfolios");
-    System.out.println(choice);
     if (choice.equals("new-port")) {
       try {
         template = handlebars.compile("createPortfolio");
@@ -51,7 +50,7 @@ public class SelectPortfolio extends FormReplyActivity<FormReplyContext> {
     }
     else {
       try {
-        template = handlebars.compile("viewPortfolio");
+        template = handlebars.compile("clientBreakdownOrSummary");
         this.messageService.send(context.getSourceEvent().getStream(), template.apply(choice));
       } catch (IOException e) {
         e.printStackTrace();
