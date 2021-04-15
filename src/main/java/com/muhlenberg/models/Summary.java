@@ -7,6 +7,8 @@ public class Summary {
     private String name;
     private double portionLiquid;
     private double size;
+    private String comparisonTicker;
+    private double compPercent;
 
 
     public Summary(Portfolio p) {
@@ -15,6 +17,16 @@ public class Summary {
         this.name = p.getName();
         this.portionLiquid = p.getPortionLiquid();
         this.size = p.getSize();
+        this.comparisonTicker= p.getMainComparison();
+        this.compPercent = p.getCompPercent();
+    }
+
+    public String getComparisonTicker() {
+        return this.comparisonTicker;
+    }
+
+    public double getCompPercent() {
+        return this.compPercent;
     }
 
     public Stock[] getTop10Stocks() {
@@ -30,7 +42,7 @@ public class Summary {
     }
 
     public double getPortionLiquid() {
-        return this.portionLiquid;
+        return this.portionLiquid * 100;
     }
 
     public double getSize() {

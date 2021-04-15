@@ -4,7 +4,6 @@ import com.muhlenberg.models.*;
 
 import com.symphony.bdk.core.activity.command.CommandContext;
 import com.symphony.bdk.core.service.message.MessageService;
-import com.symphony.bdk.gen.api.model.V4User;
 import com.symphony.bdk.spring.annotation.Slash;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -64,12 +63,11 @@ public class SummarySlashHandler {
     h2.put(s2, 127d);
     h2.put(s3, 17d);
     
-    Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2);
+    Portfolio p = new Portfolio("PortTester", 1000, .62, h, h2,"^GSPC");
     
     try {
 
       Context c = objectToContext(new Summary(p));
-
       this.messageService.send(context.getStreamId(), template.apply(c));
 
     } catch (JsonProcessingException e1) {

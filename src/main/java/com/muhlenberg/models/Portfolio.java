@@ -1,5 +1,6 @@
 package com.muhlenberg.models;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.symphony.bdk.gen.api.model.V4User;
 
@@ -21,15 +22,17 @@ public class Portfolio implements java.io.Serializable{
     private Double portionLiquid;
     private HashMap<Long, Double> clientBreakdown; //userID, client
     private HashMap<Stock, Double> assets;
-    //private Map<Float, portHistory> history;
+    private String mainComparison;
 
 
-    public Portfolio(String name, float size, Double portionLiquid, HashMap<Long,Double> clientBreakdown, HashMap<Stock,Double> assets) {
+
+    public Portfolio(String name, float size, Double portionLiquid, HashMap<Long,Double> clientBreakdown, HashMap<Stock,Double> assets, String mainComparison) {
         this.name = name;
         this.size = size;
         this.portionLiquid = portionLiquid;
         this.clientBreakdown = clientBreakdown;
         this.assets = assets;
+        this.mainComparison = mainComparison;
     }
     public Portfolio(String name, HashMap<Long,Double> clients) {
         this.name = name;
@@ -37,6 +40,7 @@ public class Portfolio implements java.io.Serializable{
         this.portionLiquid = 0.0;
         this.clientBreakdown = clients;
         this.assets = new HashMap<Stock,Double>();
+        this.mainComparison = "^GSPC";
     }
 
     public Stock[] getBottom5() {
@@ -178,6 +182,27 @@ public class Portfolio implements java.io.Serializable{
         } else {
             // Client doesn't exist!
         }
+    }
+    public double getCompPercent() {
+        //In deployment get value of current change in portfolio using the following
+        //as well as whatever pricing api is connected
+        /*
+        double totalPercentIncrease = 0d;
+        for (Map.Entry<Stock, Double> entry : assets.entrySet()) {
+            Stock stock = entry.getKey();
+            double percentage = entry.getValue();
+            totalPercentIncrease = totalPercentIncrease + stock.getChange() * percentage;
+        }
+        return totalPercentIncrease - this.mainComparison.getQuote(); */
+
+        return .25;
+    }
+    public String getMainComparison() {
+        return this.mainComparison;
+    }
+
+    public void setMainComparison(String mainComparison) {
+        this.mainComparison = mainComparison;
     }
 
     private void updateSize(Double am) {
