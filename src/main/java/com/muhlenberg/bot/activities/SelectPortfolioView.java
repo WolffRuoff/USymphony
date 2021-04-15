@@ -33,6 +33,7 @@ public class SelectPortfolioView extends FormReplyActivity<FormReplyContext> {
 
   @Override
   public void onActivity(FormReplyContext context) {
+    System.out.println("ppooop");
     V4User user = context.getInitiator().getUser();
     TemplateLoader loader = new ClassPathTemplateLoader();
     loader.setPrefix("/templates");

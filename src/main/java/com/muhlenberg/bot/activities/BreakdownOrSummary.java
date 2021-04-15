@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Jackson2Helper;
 import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.context.FieldValueResolver;
@@ -15,6 +16,9 @@ import com.github.jknack.handlebars.context.MapValueResolver;
 import com.github.jknack.handlebars.context.MethodValueResolver;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
+import com.muhlenberg.bot.Database;
+import com.muhlenberg.bot.HelperSource;
+import com.muhlenberg.models.Portfolio;
 import com.muhlenberg.models.Summary;
 import com.symphony.bdk.core.activity.ActivityMatcher;
 import com.symphony.bdk.core.activity.form.FormReplyActivity;
@@ -44,30 +48,33 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
   @Override
   public void onActivity(FormReplyContext context) {
     V4User user = context.getInitiator().getUser();
+    // Load handlebars stuff
     TemplateLoader loader = new ClassPathTemplateLoader();
     loader.setPrefix("/templates");
     loader.setSuffix(".hbs");
     Handlebars handlebars = new Handlebars(loader);
     Template template;
-    System.out.println(context.getFormValues().toPrettyString());
+
+    // Retrieve their choice and the portfolio they chose
     String choice = context.getFormValue("options");
-    System.out.println(choice);
+    String portName = context.getFormValue("portfolio");
+    Portfolio p = Database.getPortfolio(user, portName);
+
     if (choice.equals("summary")) {
       System.out.println("worked");
-      /*try {
-        
+      handlebars.registerHelpers(new HelperSource());
+      //handlebars.registerHelper("json", Jackson2Helper.INSTANCE);
+      try {
+        template = handlebars.compile("summary");
         Context c = objectToContext(new Summary(p));
-
         this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
-        template = handlebars.compile("createPortfolio");
-        this.messageService.send(context.getSourceEvent().getStream(), template.apply(user));
       } catch (IOException e) {
         e.printStackTrace();
-      }*/
+      }
     } else {
       try {
         template = handlebars.compile("clientBreakdown");
-        this.messageService.send(context.getSourceEvent().getStream(), template.apply(choice));
+        this.messageService.send(context.getSourceEvent().getStream(), template.apply(p));
       } catch (IOException e) {
         e.printStackTrace();
       }
