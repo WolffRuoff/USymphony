@@ -42,38 +42,78 @@ public class SlashHandler {
     this.template = handlebars.compile("help");
   }
 
+  // Command to view the help list
   @Slash(value = "/help", mentionBot = true)
   public void onSlashHelp(CommandContext context) throws IOException {
     final String userEmail = context.getInitiator().getUser().getEmail();
     this.messageService.send(context.getStreamId(), this.template.apply(userEmail));
   }
 
+  // Command to buy a new asset for the portfolio
   @Slash(value = "/buy", mentionBot = true)
   public void onSlashBuy(CommandContext context) throws IOException {
-    long userID = context.getInitiator().getUser().getUserId();
+    V4User user = context.getInitiator().getUser();
     String commandParts[] = context.getTextContent().trim().split(" ");
 
     if (commandParts.length == 5) {
-      final String userEmail = context.getInitiator().getUser().getEmail();
-      this.template = handlebars.compile("buy1");
-      // this.template =
-      // messageService.templates().newTemplateFromClasspath("/templates/help.ftl");
-      // this.messageService.send(context.getStreamId(),
-      // Message.builder().template(this.template, singletonMap("name",
-      // userEmail)).build());
-    } else {
+      // Gather list of portfolios belonging to the user and place in an object
+      ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
+      SelectPortfolio portL = new SelectPortfolio("buy", portfolioList);
+
+      // Try to display selectPortfolio message
+      try {
+        this.template = handlebars.compile("selectPortfolio");
+        Context c = objectToContext(portL);
+        this.messageService.send(context.getStreamId(), template.apply(c));
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      } catch (IOException e1) {
+        e1.printStackTrace();
+      }
+    }
+    // Otherwise analyze parameters
+    else {
 
     }
 
   }
 
+  // Command to sell an asset for the portfolio
+  @Slash(value = "/sell", mentionBot = true)
+  public void onSlashSell(CommandContext context) throws IOException {
+    V4User user = context.getInitiator().getUser();
+    String commandParts[] = context.getTextContent().trim().split(" ");
+
+    if (commandParts.length == 5) {
+      // Gather list of portfolios belonging to the user and place in an object
+      ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
+      SelectPortfolio portL = new SelectPortfolio("sell", portfolioList);
+
+      // Try to display selectPortfolio message
+      try {
+        this.template = handlebars.compile("selectPortfolio");
+        Context c = objectToContext(portL);
+        this.messageService.send(context.getStreamId(), template.apply(c));
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      } catch (IOException e1) {
+        e1.printStackTrace();
+      }
+    }
+    // Otherwise analyze parameters
+    else {
+
+    }
+
+  }
+
+  // Command to create a new portfolio
   @Slash(value = "/create", mentionBot = true)
   public void onSlashCreate(CommandContext context) {
     V4User user = context.getInitiator().getUser();
 
     try {
       this.template = handlebars.compile("createPortfolio");
-      System.out.println("tada");
       this.messageService.send(context.getStreamId(), template.apply(user));
     } catch (JsonProcessingException e) {
       e.printStackTrace();
@@ -82,21 +122,31 @@ public class SlashHandler {
     }
   }
 
+  // Command to view a portfolio summary or client breakdown
   @Slash(value = "/portfolio", mentionBot = true)
   public void onSlashPortfolio(CommandContext context) {
     V4User user = context.getInitiator().getUser();
     String commandParts[] = context.getTextContent().trim().split(" ");
+
+    // If command is just /portfolio display form
     if (commandParts.length == 5) {
+      // Gather list of portfolios belonging to the user and place in an object
       ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
+      SelectPortfolio portL = new SelectPortfolio("view", portfolioList);
+
+      // Try to display selectPortfolio message
       try {
         this.template = handlebars.compile("selectPortfolio");
-        this.messageService.send(context.getStreamId(), template.apply(portfolioList));
+        Context c = objectToContext(portL);
+        this.messageService.send(context.getStreamId(), template.apply(c));
       } catch (JsonProcessingException e) {
         e.printStackTrace();
       } catch (IOException e1) {
         e1.printStackTrace();
       }
-    } else {
+    }
+    // Otherwise analyze parameters
+    else {
 
     }
 

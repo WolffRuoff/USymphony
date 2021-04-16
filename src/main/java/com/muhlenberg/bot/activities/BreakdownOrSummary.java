@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Jackson2Helper;
 import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.context.FieldValueResolver;
@@ -61,7 +60,6 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
     Portfolio p = Database.getPortfolio(user, portName);
 
     if (choice.equals("summary")) {
-      System.out.println("worked");
       handlebars.registerHelpers(new HelperSource());
       //handlebars.registerHelper("json", Jackson2Helper.INSTANCE);
       try {

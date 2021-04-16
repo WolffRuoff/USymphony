@@ -1,11 +1,11 @@
 <messageML>
     <h3>Do you want to view {{this}}'s client breakdown or portfolio summary?</h3>
     <form id="clientBreakdownOrSummary">
-        <div style="visibility: hidden;">
-            <radio name="portfolio" value="{{this}}" checked="true"></radio>
-        </div>
         <radio name="options" value="clientBreakdown" checked="true">Client Breakdown</radio>
         <radio name="options" value="summary">Portfolio Summary</radio>
         <button type="action" name="clientBreakdownOrSummary">View</button>
+        <div style="visibility: hidden;">
+            <radio name="portfolio" value="{{this}}" checked="true"></radio>
+        </div>
     </form>
 </messageML>

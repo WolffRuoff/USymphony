@@ -3,10 +3,13 @@
     <form id="selectPortfolio">
         <select name="portfolios">
             <option value="new-port" selected="true">Create New Portfolio</option>
-            {{#each this}}
+            {{#each portfolioList}}
             <option value="{{ name }}">{{ name }}</option>
             {{/each}}
         </select>
         <button type="action" name="select-portfolio">Next</button>
+        <div style="visibility: hidden;">
+            <radio name="workflow" value="{{option}}" checked="true"></radio>
+        </div>
     </form>
 </messageML>

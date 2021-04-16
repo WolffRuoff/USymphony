@@ -53,9 +53,13 @@ public class Database {
     }
 
     public static void addPortfolio(V4User userID, Portfolio port) {
+        //Create table (won't do anything if it already exists)
+        createNewTable();
+
         //Make sure portfolio doesn't have existing name
         Portfolio portfol = getPortfolio(userID, port.getName());
         int i = 0;
+
         //If portfolio of same name exists, append i to the name of the new one
         while (portfol != null) {
             i++;
@@ -110,6 +114,7 @@ public class Database {
         return null;
     }
 
+    //Serializes portfolio to bytes
     public static byte[] makeByte(Portfolio port) {
         try {
 
@@ -125,6 +130,7 @@ public class Database {
         return null;
     }
 
+    //Converts bytes to a portfolio object
     public static Portfolio readBytes(byte[] data) {
         try {
             ByteArrayInputStream baip = new ByteArrayInputStream(data);
@@ -157,7 +163,7 @@ public class Database {
         h2.put(s2, 127d);
         h2.put(s3, 17d);
 
-        Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2);
+        Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2, "^GSPC");
         Database.createNewTable();
         Database.addPortfolio(user, p);
         ArrayList<Portfolio> portlist = Database.getPortfolioList(user);

@@ -33,6 +33,7 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
   @Override
   public void onActivity(FormReplyContext context) {
     final String name = context.getFormValue("name");
+    final String ticker = context.getFormValue("ticker");
 
     JsonNode node = context.getFormValues();
     HashMap<Long, Double> clients = new HashMap<Long, Double>(); 
@@ -40,7 +41,7 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
       clients.put(client.asLong(), 0.0);
     }
 
-    final Portfolio p = new Portfolio(name, clients);
+    final Portfolio p = new Portfolio(name, clients, ticker);
 
     Database.addPortfolio(context.getInitiator().getUser(), p);
 

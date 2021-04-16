@@ -33,14 +33,19 @@ public class SelectPortfolioView extends FormReplyActivity<FormReplyContext> {
 
   @Override
   public void onActivity(FormReplyContext context) {
-    System.out.println("ppooop");
     V4User user = context.getInitiator().getUser();
+
+    // handlebars setup
     TemplateLoader loader = new ClassPathTemplateLoader();
     loader.setPrefix("/templates");
     loader.setSuffix(".hbs");
     Handlebars handlebars = new Handlebars(loader);
     Template template;
+
+    // Retrieve portfolio selected
     String choice = context.getFormValue("portfolios");
+
+    // If new-port create new portfolio
     if (choice.equals("new-port")) {
       try {
         template = handlebars.compile("createPortfolio");
@@ -49,12 +54,36 @@ public class SelectPortfolioView extends FormReplyActivity<FormReplyContext> {
         e.printStackTrace();
       }
     }
+    // Otherwise determine which workflow and continue
     else {
-      try {
-        template = handlebars.compile("clientBreakdownOrSummary");
-        this.messageService.send(context.getSourceEvent().getStream(), template.apply(choice));
-      } catch (IOException e) {
-        e.printStackTrace();
+      String nextStep = context.getFormValue("workflow");
+
+      // If in the /portfolio workflow
+      if (nextStep.equals("view")) {
+        try {
+          template = handlebars.compile("clientBreakdownOrSummary");
+          this.messageService.send(context.getSourceEvent().getStream(), template.apply(choice));
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+      //If in the /buy workflow
+      else if (nextStep.equals("buy")) {
+        try {
+          template = handlebars.compile("buyAsset");
+          this.messageService.send(context.getSourceEvent().getStream(), template.apply(choice));
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+      //If in the /sell workflow
+      else if (nextStep.equals("sell")) {
+        try {
+          template = handlebars.compile("buyAsset");
+          this.messageService.send(context.getSourceEvent().getStream(), template.apply(choice));
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     }
 

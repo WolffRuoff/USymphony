@@ -1,4 +1,5 @@
 package com.muhlenberg.models;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,18 +16,17 @@ import lombok.Setter;
 
 @RequiredArgsConstructor
 @Getter
-public class Portfolio implements java.io.Serializable{
+public class Portfolio implements java.io.Serializable {
     private static final long serialVersionUID = 6529685098267757690L;
     private @Setter String name;
     private float size;
     private Double portionLiquid;
-    private HashMap<Long, Double> clientBreakdown; //userID, client
+    private HashMap<Long, Double> clientBreakdown; // userID, client
     private HashMap<Stock, Double> assets;
     private String mainComparison;
 
-
-
-    public Portfolio(String name, float size, Double portionLiquid, HashMap<Long,Double> clientBreakdown, HashMap<Stock,Double> assets, String mainComparison) {
+    public Portfolio(String name, float size, Double portionLiquid, HashMap<Long, Double> clientBreakdown,
+            HashMap<Stock, Double> assets, String mainComparison) {
         this.name = name;
         this.size = size;
         this.portionLiquid = portionLiquid;
@@ -34,13 +34,18 @@ public class Portfolio implements java.io.Serializable{
         this.assets = assets;
         this.mainComparison = mainComparison;
     }
-    public Portfolio(String name, HashMap<Long,Double> clients) {
+
+    public Portfolio(String name, HashMap<Long, Double> clients, String mainComp) {
         this.name = name;
         this.size = 0;
         this.portionLiquid = 0.0;
         this.clientBreakdown = clients;
-        this.assets = new HashMap<Stock,Double>();
-        this.mainComparison = "^GSPC";
+        this.assets = new HashMap<Stock, Double>();
+        if ("".equals(mainComp)) {
+            this.mainComparison = "^GSPC";
+        } else {
+            this.mainComparison = mainComp;
+        }
     }
 
     public Stock[] getBottom5() {
@@ -52,14 +57,14 @@ public class Portfolio implements java.io.Serializable{
             @Override
             public int compare(Stock c1, Stock c2) {
                 return Double.compare(c1.getChange(), c2.getChange());
-            }});
-        
+            }
+        });
+
         if (list.size() < 5) {
             Stock[] arr = new Stock[list.size()];
             arr = list.toArray(arr);
             return arr;
-        }
-        else {
+        } else {
             Stock[] arr = new Stock[5];
             for (int i = 0; i < 5; i++) {
                 arr[i] = list.get(i);
@@ -68,25 +73,25 @@ public class Portfolio implements java.io.Serializable{
         }
     }
 
-    //change so that top movers are not also in bottom movers.
+    // change so that top movers are not also in bottom movers.
     public Stock[] getTop5() {
-                ArrayList<Stock> list = new ArrayList<Stock>();
+        ArrayList<Stock> list = new ArrayList<Stock>();
         for (Stock key : assets.keySet()) {
             list.add(key);
         }
-        //Order is swapped in compare to get lower stocks
+        // Order is swapped in compare to get lower stocks
         Collections.sort(list, new Comparator<Stock>() {
             @Override
             public int compare(Stock c1, Stock c2) {
                 return Double.compare(c2.getChange(), c1.getChange());
-            }});
-        
+            }
+        });
+
         if (list.size() < 5) {
             Stock[] arr = new Stock[list.size()];
             arr = list.toArray(arr);
             return arr;
-        }
-        else {
+        } else {
             Stock[] arr = new Stock[5];
             for (int i = 0; i < 5; i++) {
                 arr[i] = list.get(i);
@@ -94,44 +99,46 @@ public class Portfolio implements java.io.Serializable{
             return arr;
         }
     }
+
     public void addAsset(Stock n, Double am) {
-        //If asset already exists add
-        if(this.assets.containsKey(n)){
+        // If asset already exists add
+        if (this.assets.containsKey(n)) {
             this.assets.put(n, Double.sum(am, this.assets.get(n)));
         }
-        //Create new asset
-        else{
+        // Create new asset
+        else {
             this.assets.put(n, am);
         }
         this.rebalancePortfolio();
     }
+
     public void removeAsset(Stock n, Double am) {
-        //Make sure asset exists
-        if(this.assets.containsKey(n)){
-            if(Double.compare(am, this.assets.get(n)) >= 0 ) {
+        // Make sure asset exists
+        if (this.assets.containsKey(n)) {
+            if (Double.compare(am, this.assets.get(n)) >= 0) {
                 this.assets.remove(n);
-            }
-            else{
+            } else {
                 this.assets.put(n, this.assets.get(n) - am);
             }
             this.rebalancePortfolio();
-        }
-        else{
-            //Return an error that asset doesn't exist
+        } else {
+            // Return an error that asset doesn't exist
         }
     }
-    private void rebalancePortfolio(){
-        //rebalances portfolio
+
+    private void rebalancePortfolio() {
+        // rebalances portfolio
     }
-    //Absolutely critical to override and return stock array. DO NOT DELETE
+
+    // Absolutely critical to override and return stock array. DO NOT DELETE
     public Stock[] getAssets() {
         int i = 0;
-        Stock[] arr  = new Stock[assets.size()];
+        Stock[] arr = new Stock[assets.size()];
 
         for (Stock key : assets.keySet()) {
             arr[i] = key;
             i++;
-        }   
+        }
         return arr;
     }
 
@@ -172,31 +179,31 @@ public class Portfolio implements java.io.Serializable{
         Long userId = user.getUserId();
         // Make sure client exists
         if (this.clientBreakdown.containsKey(userId)) {
-            this.clientBreakdown.put(userId, this.clientBreakdown.get(userId) - am );
+            this.clientBreakdown.put(userId, this.clientBreakdown.get(userId) - am);
             if (this.clientBreakdown.get(userId) > am) {
                 updateSize(am * -1);
-            }
-            else if (this.clientBreakdown.get(userId) <= am) {
+            } else if (this.clientBreakdown.get(userId) <= am) {
                 removeClient(user);
             }
         } else {
             // Client doesn't exist!
         }
     }
+
     public double getCompPercent() {
-        //In deployment get value of current change in portfolio using the following
-        //as well as whatever pricing api is connected
+        // In deployment get value of current change in portfolio using the following
+        // as well as whatever pricing api is connected
         /*
-        double totalPercentIncrease = 0d;
-        for (Map.Entry<Stock, Double> entry : assets.entrySet()) {
-            Stock stock = entry.getKey();
-            double percentage = entry.getValue();
-            totalPercentIncrease = totalPercentIncrease + stock.getChange() * percentage;
-        }
-        return totalPercentIncrease - this.mainComparison.getQuote(); */
+         * double totalPercentIncrease = 0d; for (Map.Entry<Stock, Double> entry :
+         * assets.entrySet()) { Stock stock = entry.getKey(); double percentage =
+         * entry.getValue(); totalPercentIncrease = totalPercentIncrease +
+         * stock.getChange() * percentage; } return totalPercentIncrease -
+         * this.mainComparison.getQuote();
+         */
 
         return .25;
     }
+
     public String getMainComparison() {
         return this.mainComparison;
     }
@@ -238,18 +245,19 @@ public class Portfolio implements java.io.Serializable{
         this.portionLiquid = portionLiquid;
     }
 
-    public HashMap<Long,Double> getClientBreakdown() {
+    public HashMap<Long, Double> getClientBreakdown() {
         return this.clientBreakdown;
     }
 
-    public void setClientBreakdown(HashMap<Long,Double> clientBreakdown) {
+    public void setClientBreakdown(HashMap<Long, Double> clientBreakdown) {
         this.clientBreakdown = clientBreakdown;
     }
 
-    public void setAssets(HashMap<Stock,Double> assets) {
+    public void setAssets(HashMap<Stock, Double> assets) {
         this.assets = assets;
     }
-    public HashMap<Stock,Double> getAssetList() {
+
+    public HashMap<Stock, Double> getAssetList() {
         return this.assets;
     }
 }
