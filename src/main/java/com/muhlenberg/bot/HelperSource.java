@@ -27,8 +27,13 @@ public class HelperSource {
         int size = 7;
 
         String pieChart =" <div style=\"width:%dem;height:%dem;border-radius:50%%;margin:auto;background:conic-gradient(%s)\"></div> ";
-
-        double percentage = value;
+        double percentage;
+        if (value < 1) {
+            percentage = value*100;
+        }
+        else {
+            percentage = value;
+        }
         fillStyle = String.format("%s %d%%,%s %f%%,", colours.get(3), 0, colours.get(3), percentage);
         fillStyle += String.format("%s 0%%,%s 100%%", colours.get(0), colours.get(0));
 

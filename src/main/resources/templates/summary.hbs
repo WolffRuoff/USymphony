@@ -84,8 +84,29 @@
         </tbody>
 
     </table>
-    <h3> Percentage Currently Invested: {{portionLiquid}}% </h3>
-    {{pieChart portionLiquid}}
-    <h3> This Portfolio Is Exceeding {{comparisonTicker}} by {{compPercent}}% </h3>
-    <p> testing </p>
+
+    <br/>
+
+    <div style="text-align: center;">
+    <table >
+        <tr>
+            <td>
+                <div style="margin-top:5%">
+                        <h2> Percentage Currently Invested: {{portionLiquid}}% </h2>
+                </div>
+            </td>
+            <td>
+                {{pieChart portionLiquid}}
+            </td>
+            <td>
+                <div style="margin-top:5    %">
+        	        <h2> This Portfolio Is Exceeding {{comparisonTicker}} by {{compPercent}}% </h2>
+                </div>
+            </td>
+            <td>
+                {{pieChart compPercent}}
+            </td>
+        </tr>
+    </table>
+  </div>
 </messageML>
