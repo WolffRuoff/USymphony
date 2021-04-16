@@ -163,11 +163,7 @@ public class Database {
         h2.put(s2, 127d);
         h2.put(s3, 17d);
 
-<<<<<<< HEAD
         Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2, "^GSPC");
-=======
-        Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2,"AAPL");
->>>>>>> main
         Database.createNewTable();
         Database.addPortfolio(user, p);
         ArrayList<Portfolio> portlist = Database.getPortfolioList(user);
