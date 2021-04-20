@@ -1,0 +1,30 @@
+<messageML>
+  <h2>Buy Assets</h2>
+
+  <form id="buy-asset">
+    <h3>Ticker Input</h3>
+
+    <text-field name="ticker" required="true" placeholder="Type ticker name" />
+
+
+    <h3>Dropdown Select</h3>
+
+    <select name="buyOptions">
+
+      <option value="shares">Number of Shares</option>
+
+      <option value="price">Price</option>
+
+    </select>
+    <h3>Amount Input</h3>
+
+    <text-field name="Amount" placeholder="Type in amount" required="true" pattern="^[0-9]*(\.[0-9][0-9])?$" pattern-error-message="Please only insert numbers"/>
+
+    <button name="submit" type="action">Order</button>
+    
+    <div style="visibility: hidden;">
+      <radio name="portfolio" value="{{this}}" checked="true"></radio>
+    </div>
+  </form>
+
+</messageML>

@@ -1,14 +1,30 @@
 package com.muhlenberg.models;
 
-import java.util.Map;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
 public class Client {
-    private long userID;
-    private float amountInvested;
-    private Map<Long, Integer> portfolioAmounts;
+    private Long userID;
+    private Double amountInvested;
+    
+    public Client(Long userID, Double amountInvested) {
+        this.userID = userID;
+        this.amountInvested = amountInvested;
+    }
+    
+    public Long getUserID() {
+        return this.userID;
+    }
+
+    public void setUserID(Long userID) {
+        this.userID = userID;
+    }
+
+    public Double getAmountInvested() {
+        return this.amountInvested;
+    }
+
+    public void setAmountInvested(Double amountInvested) {
+        this.amountInvested = amountInvested;
+    }
+
+    //private Map<Long, Integer> portfolioAmounts;
+
 }

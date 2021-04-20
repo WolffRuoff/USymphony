@@ -1,0 +1,19 @@
+<messageML>
+    <h2>Client Breakdown</h2>
+    <table>
+        <thead>
+            <tr>
+                <td>Client</td>
+                <td>Amount Invested</td>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each clients}}
+            <tr>
+                <td><mention uid="{{userID}}"/></td>
+                <td>${{amountInvested}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</messageML>

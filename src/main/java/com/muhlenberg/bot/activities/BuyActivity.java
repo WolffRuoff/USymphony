@@ -31,18 +31,18 @@ import com.symphony.bdk.gen.api.model.V4User;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
+public class BuyActivity extends FormReplyActivity<FormReplyContext> {
 
   private final MessageService messageService;
 
-  public BreakdownOrSummary(MessageService messageService) {
+  public BuyActivity(MessageService messageService) {
     this.messageService = messageService;
   }
 
   @Override
   public ActivityMatcher<FormReplyContext> matcher() {
-    return context -> "clientBreakdownOrSummary".equals(context.getFormId())
-        && "clientBreakdownOrSummary".equals(context.getFormValue("action"));
+    return context -> "buy-asset".equals(context.getFormId())
+        && "submit".equals(context.getFormValue("action"));
   }
 
   @Override
@@ -56,15 +56,16 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
     Template template;
 
     // Retrieve their choice and the portfolio they chose
-    String choice = context.getFormValue("options");
+    String sharesOrPrice = context.getFormValue("buyOptions");
+    Double amount = Double.parseDouble(context.getFormValue("Amount"));
     String portName = context.getFormValue("portfolio");
     Portfolio p = Database.getPortfolio(user, portName);
 
-    if (choice.equals("summary")) {
+    //Convert shares to dollar value
+    if (sharesOrPrice.equals("shares")) {
       handlebars.registerHelpers(new HelperSource());
-      //handlebars.registerHelper("json", Jackson2Helper.INSTANCE);
       try {
-        template = handlebars.compile("summary");
+        template = handlebars.compile("orderConfirmation");
         Context c = objectToContext(new Summary(p));
         this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
       } catch (IOException e) {
