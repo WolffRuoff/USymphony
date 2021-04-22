@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.symphony.bdk.gen.api.model.V4User;
 
+import java.io.IOException;
 import java.lang.Double;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import java.util.Comparator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import yahoofinance.YahooFinance;
 
 @RequiredArgsConstructor
 @Getter
@@ -21,8 +23,8 @@ public class Portfolio implements java.io.Serializable {
     private @Setter String name;
     private float size;
     private Double portionLiquid;
-    private HashMap<Long, Double> clientBreakdown; // userID, client
-    private HashMap<Stock, Double> assets;
+    private HashMap<Long, Double> clientBreakdown; // userID, client %
+    private HashMap<Stock, Double> assets; // Stock, # of shares owned
     private String mainComparison;
 
     public Portfolio(String name, float size, Double portionLiquid, HashMap<Long, Double> clientBreakdown,
@@ -46,6 +48,37 @@ public class Portfolio implements java.io.Serializable {
         } else {
             this.mainComparison = mainComp;
         }
+    }
+
+    //Provide method to update stock changes. Should be called every time the 
+    //change is checked. Needed so that top5 and bottom5 changes will still work.
+    public void updateStocks() throws IOException {
+        ArrayList<String> updateVals = new ArrayList<String>();
+        for (Stock stock : assets.keySet()) {
+            updateVals.add(stock.getSymbol());
+        }
+        String[] symbols = updateVals.toArray(new String[updateVals.size()]);
+        Map<String, yahoofinance.Stock> stocks = YahooFinance.get(symbols);
+        for(Stock stock : assets.keySet()) {
+            stock.setLatestPrice(
+                stocks.get(stock.getSymbol()).getQuote().getPrice().doubleValue()
+            );
+            stock.setChange(
+                stocks.get(stock.getSymbol()).getQuote().getChangeInPercent().doubleValue()
+            );
+        }
+    }
+
+    public double getEvaluation() {
+
+        double val = 0.0;
+        for (Map.Entry<Stock, Double> entry : assets.entrySet()) { 
+            // Add stock price * value of that stock
+            val += entry.getKey().getLatestPrice() * entry.getValue() ; 
+        }
+
+        return val;
+         
     }
 
     public Stock[] getBottom5() {
@@ -189,19 +222,19 @@ public class Portfolio implements java.io.Serializable {
             // Client doesn't exist!
         }
     }
-
-    public double getCompPercent() {
-        // In deployment get value of current change in portfolio using the following
-        // as well as whatever pricing api is connected
-        /*
-         * double totalPercentIncrease = 0d; for (Map.Entry<Stock, Double> entry :
-         * assets.entrySet()) { Stock stock = entry.getKey(); double percentage =
-         * entry.getValue(); totalPercentIncrease = totalPercentIncrease +
-         * stock.getChange() * percentage; } return totalPercentIncrease -
-         * this.mainComparison.getQuote();
-         */
-
-        return .25;
+    //Return % increase compared to main stat
+    public double getCompPercent() throws IOException {
+        //get total valuation
+        double total = getEvaluation();
+        double totalPercentIncrease = 0d; 
+        for (Map.Entry<Stock, Double> entry : assets.entrySet()) { 
+            //find percentage of portfolio due to given stock
+            double percentage = entry.getValue() * entry.getKey().getLatestPrice() / total; 
+            totalPercentIncrease = totalPercentIncrease + (entry.getKey().getChange()/100 * percentage); 
+        }
+        // Round output to two decimals
+        return Math.round( (totalPercentIncrease * 100) 
+        - YahooFinance.get(this.mainComparison).getQuote().getChangeInPercent().doubleValue());  
     }
 
     public String getMainComparison() {

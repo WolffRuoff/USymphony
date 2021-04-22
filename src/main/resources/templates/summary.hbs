@@ -4,7 +4,10 @@
 <br/>
     
     <h2> Portfolio Summary: {{name}}</h2>
-    <h3> Top 5 Gains:</h3>
+
+    <h2> The overall value of the Portfolio is $ {{evaluation}} </h2>
+
+    <h3> Top 5 Gainers:</h3>
     <table>
             
         <thead>
@@ -78,7 +81,7 @@
                             {{/if}}
                         {{/if}}   
             </tr>    
-
+            
             {{/each}}
 
         </tbody>
@@ -88,7 +91,7 @@
     <br/>
 
     <div style="text-align: center;">
-    <table >
+    <table>
         <tr>
             <td>
                 <div style="margin-top:5%">
@@ -99,8 +102,8 @@
                 {{pieChart portionLiquid}}
             </td>
             <td>
-                <div style="margin-top:5    %">
-        	        <h2> This Portfolio Is Exceeding {{comparisonTicker}} by {{compPercent}}% </h2>
+                <div style="margin-top:5%">
+        	        <h2> This Portfolio Is Exceeding {{comparisonTicker}} by {{compPercent}}% in the past 24hrs</h2>
                 </div>
             </td>
             <td>

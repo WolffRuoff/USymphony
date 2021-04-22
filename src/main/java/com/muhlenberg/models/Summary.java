@@ -9,16 +9,33 @@ public class Summary {
     private double size;
     private String comparisonTicker;
     private double compPercent;
-
+    private double evaluation;
 
     public Summary(Portfolio p) {
+        //Update the portfolio values before creating summary
+        try{
+            p.updateStocks();
+            this.compPercent = p.getCompPercent();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    
         this.top10Stocks = p.getTop5();
         this.bottom10Stocks = p.getBottom5();
         this.name = p.getName();
         this.portionLiquid = p.getPortionLiquid();
         this.size = p.getSize();
         this.comparisonTicker= p.getMainComparison();
-        this.compPercent = p.getCompPercent();
+        
+        this.evaluation = Math.round(p.getEvaluation()*100) /100;
+    }
+
+    public double getEvaluation() {
+        return this.evaluation;
+    }
+
+    public void setEvaluation(double evaluation) {
+        this.evaluation = evaluation;
     }
 
     public String getComparisonTicker() {
