@@ -66,7 +66,7 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
     } else {
       try {
         template = handlebars.compile("clientBreakdown");
-        ClientList clients = new ClientList(p.getClientBreakdown());
+        ClientList clients = new ClientList(p.getClientBreakdown(), p.getSize());
         this.messageService.send(context.getSourceEvent().getStream(), template.apply(ObjectToContext.Convert(clients)));
       } catch (IOException e) {
         e.printStackTrace();

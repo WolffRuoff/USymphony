@@ -105,19 +105,20 @@ public class Database {
 
             Stock newStock = new Stock(ticker, stock.getName(), price, quote.getChangeInPercent().doubleValue(),
                     isLargeCap);
-            newPort.addAsset(newStock, orderAmount);
+            newPort.addAsset(newStock, shares);
         } catch (IOException e1) {
             e1.printStackTrace();
         }
 
         // SQL statement for adding a portfolio
-        String sql = "UPDATE warehouses SET portfolio = ? WHERE userid = ? portfolio = ?";
+        String sql = "UPDATE portfoliolist SET portfolio = ? WHERE userid = ? AND portfolio = ?";
 
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setBytes(1, makeByte(newPort));
             pstmt.setLong(2, userID.getUserId());
             pstmt.setBytes(3, makeByte(port));
             pstmt.executeUpdate();
+            System.out.println("Yay");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

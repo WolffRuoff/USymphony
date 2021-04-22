@@ -2,6 +2,7 @@ package com.muhlenberg.models;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.symphony.bdk.gen.api.model.V4User;
 
@@ -50,8 +51,8 @@ public class Portfolio implements java.io.Serializable {
         }
     }
 
-    //Provide method to update stock changes. Should be called every time the 
-    //change is checked. Needed so that top5 and bottom5 changes will still work.
+    // Provide method to update stock changes. Should be called every time the
+    // change is checked. Needed so that top5 and bottom5 changes will still work.
     public void updateStocks() throws IOException {
         ArrayList<String> updateVals = new ArrayList<String>();
         for (Stock stock : assets.keySet()) {
@@ -59,26 +60,22 @@ public class Portfolio implements java.io.Serializable {
         }
         String[] symbols = updateVals.toArray(new String[updateVals.size()]);
         Map<String, yahoofinance.Stock> stocks = YahooFinance.get(symbols);
-        for(Stock stock : assets.keySet()) {
-            stock.setLatestPrice(
-                stocks.get(stock.getSymbol()).getQuote().getPrice().doubleValue()
-            );
-            stock.setChange(
-                stocks.get(stock.getSymbol()).getQuote().getChangeInPercent().doubleValue()
-            );
+        for (Stock stock : assets.keySet()) {
+            stock.setLatestPrice(stocks.get(stock.getSymbol()).getQuote().getPrice().doubleValue());
+            stock.setChange(stocks.get(stock.getSymbol()).getQuote().getChangeInPercent().doubleValue());
         }
     }
 
     public double getEvaluation() {
 
         double val = 0.0;
-        for (Map.Entry<Stock, Double> entry : assets.entrySet()) { 
+        for (Map.Entry<Stock, Double> entry : assets.entrySet()) {
             // Add stock price * value of that stock
-            val += entry.getKey().getLatestPrice() * entry.getValue() ; 
+            val += entry.getKey().getLatestPrice() * entry.getValue();
         }
 
         return val;
-         
+
     }
 
     public Stock[] getBottom5() {
@@ -133,19 +130,20 @@ public class Portfolio implements java.io.Serializable {
         }
     }
 
-    public void addAsset(Stock n, Double am) {
-        // If asset already exists add
-        if (this.assets.containsKey(n)) {
-            this.assets.put(n, Double.sum(am, this.assets.get(n)));
+    public void addAsset(Stock n, Double am) throws IOException {
+        // If stock exists, update value
+        for (Entry<Stock, Double> stoc : this.assets.entrySet()) {
+            if (stoc.getKey().getSymbol().equals(n.getSymbol())) {
+                this.assets.put(stoc.getKey(), Double.sum(am, this.assets.get(stoc.getKey())));
+                return;
+            }
         }
         // Create new asset
-        else {
-            this.assets.put(n, am);
-        }
+        this.assets.put(n, am);
         this.rebalancePortfolio();
     }
 
-    public void removeAsset(Stock n, Double am) {
+    public void removeAsset(Stock n, Double am) throws IOException {
         // Make sure asset exists
         if (this.assets.containsKey(n)) {
             if (Double.compare(am, this.assets.get(n)) >= 0) {
@@ -159,8 +157,15 @@ public class Portfolio implements java.io.Serializable {
         }
     }
 
-    private void rebalancePortfolio() {
-        // rebalances portfolio
+    // Updates portion liquid
+    private void rebalancePortfolio() throws IOException {
+        updateStocks();
+        Double newAmount = 0.0;
+        for(Entry<Stock, Double> stoc : this.assets.entrySet()) {
+            newAmount += stoc.getKey().getLatestPrice() * stoc.getValue();
+        }
+        this.portionLiquid = Math.round(((this.size - newAmount) / this.size) * 100.0) / 100.0;
+        
     }
 
     // Absolutely critical to override and return stock array. DO NOT DELETE
@@ -222,19 +227,20 @@ public class Portfolio implements java.io.Serializable {
             // Client doesn't exist!
         }
     }
-    //Return % increase compared to main stat
+
+    // Return % increase compared to main stat
     public double getCompPercent() throws IOException {
-        //get total valuation
+        // get total valuation
         double total = getEvaluation();
-        double totalPercentIncrease = 0d; 
-        for (Map.Entry<Stock, Double> entry : assets.entrySet()) { 
-            //find percentage of portfolio due to given stock
-            double percentage = entry.getValue() * entry.getKey().getLatestPrice() / total; 
-            totalPercentIncrease = totalPercentIncrease + (entry.getKey().getChange()/100 * percentage); 
+        double totalPercentIncrease = 0d;
+        for (Map.Entry<Stock, Double> entry : assets.entrySet()) {
+            // find percentage of portfolio due to given stock
+            double percentage = entry.getValue() * entry.getKey().getLatestPrice() / total;
+            totalPercentIncrease = totalPercentIncrease + (entry.getKey().getChange() / 100 * percentage);
         }
         // Round output to two decimals
-        return Math.round( (totalPercentIncrease * 100) 
-        - YahooFinance.get(this.mainComparison).getQuote().getChangeInPercent().doubleValue());  
+        return Math.round((totalPercentIncrease * 100)
+                - YahooFinance.get(this.mainComparison).getQuote().getChangeInPercent().doubleValue());
     }
 
     public String getMainComparison() {

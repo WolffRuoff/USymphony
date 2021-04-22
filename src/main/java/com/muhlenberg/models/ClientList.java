@@ -7,10 +7,10 @@ import java.util.Map;
 public class ClientList {
     private ArrayList<Client> clients;
 
-    public ClientList(HashMap<Long, Double> clientBreakdown) {
+    public ClientList(HashMap<Long, Double> clientBreakdown, float size) {
         this.clients = new ArrayList<Client>();
         for (Map.Entry<Long, Double> entry : clientBreakdown.entrySet()) {
-            this.clients.add(new Client(entry.getKey(), entry.getValue()));
+            this.clients.add(new Client(entry.getKey(), entry.getValue() * size));
         }
     }
     public ArrayList<Client> getClients() {

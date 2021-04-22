@@ -73,15 +73,28 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
         shares = orderAmount / price;
       }
 
-      //Convert to object and send order confirmation
-      handlebars.registerHelpers(new HelperSource());
-      OrderDetails orderDets = new OrderDetails(p, ticker, shares, price, orderAmount);
-      try {
-        template = handlebars.compile("orderConfirmation");
-        Context c = ObjectToContext.Convert(orderDets);
-        this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
-      } catch (IOException e) {
-        e.printStackTrace();
+      // Make sure portfolio has enough liquid for the purchase
+      Double liquidAmount =  Math.round((p.getSize() * p.getPortionLiquid()) * 100.0) / 100.0;
+      if (liquidAmount >= orderAmount) {
+
+        // Convert to object and send order confirmation
+        handlebars.registerHelpers(new HelperSource());
+        OrderDetails orderDets = new OrderDetails(p, ticker, shares, price, orderAmount);
+        try {
+          template = handlebars.compile("orderConfirmation");
+          Context c = ObjectToContext.Convert(orderDets);
+          this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+      // Portfolio doesn't have enough liquid for purchase
+      else {
+        final String message = "<messageML>'" + p.getName() + "' doesn't have enough liquid assets. It only has $"
+            + liquidAmount + ". Please try again.</messageML>";
+        this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
+        template = handlebars.compile("buyAsset");
+        this.messageService.send(context.getSourceEvent().getStream(), template.apply(p.getName()));
       }
     }
 
