@@ -1,0 +1,27 @@
+<messageML>
+    <h1>Review Order for {{portName}}</h1>
+
+    <h2>Stock Info</h2>
+    <p><b>Ticker: </b>
+        <cash tag="{{ticker}}" />
+    </p>
+    <p><b>Current Price: </b>${{price}}</p><br />
+
+    <h2>Order Details</h2>
+    <p><b>Number of Shares: </b>{{shares}}</p>
+    <p><b>Dollar Value: </b>${{orderAmount}}</p><br /><br />
+
+
+    <form id="confirm-Buy">
+        <button name="submit" type="action">Place Order</button>
+
+        <div style="visibility: hidden;">
+            <radio name="portfolio" value="{{portName}}" checked="true"></radio>
+            <radio name="ticker" value="{{ticker}}" checked="true"></radio>
+            <radio name="price" value="{{price}}" checked="true"></radio>
+            <radio name="shares" value="{{shares}}" checked="true"></radio>
+            <radio name="orderAmount" value="{{orderAmount}}" checked="true"></radio>
+        </div>
+    </form>
+
+</messageML>

@@ -2,21 +2,14 @@ package com.muhlenberg.bot.activities;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.context.FieldValueResolver;
-import com.github.jknack.handlebars.context.JavaBeanValueResolver;
-import com.github.jknack.handlebars.context.MapValueResolver;
-import com.github.jknack.handlebars.context.MethodValueResolver;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import com.muhlenberg.bot.Database;
 import com.muhlenberg.bot.HelperSource;
+import com.muhlenberg.bot.ObjectToContext;
 import com.muhlenberg.models.ClientList;
 import com.muhlenberg.models.Portfolio;
 import com.muhlenberg.models.Summary;
@@ -65,7 +58,7 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
       //handlebars.registerHelper("json", Jackson2Helper.INSTANCE);
       try {
         template = handlebars.compile("summary");
-        Context c = objectToContext(new Summary(p));
+        Context c = ObjectToContext.Convert(new Summary(p));
         this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
       } catch (IOException e) {
         e.printStackTrace();
@@ -74,7 +67,7 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
       try {
         template = handlebars.compile("clientBreakdown");
         ClientList clients = new ClientList(p.getClientBreakdown());
-        this.messageService.send(context.getSourceEvent().getStream(), template.apply(objectToContext(clients)));
+        this.messageService.send(context.getSourceEvent().getStream(), template.apply(ObjectToContext.Convert(clients)));
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -88,13 +81,4 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
         .description("\"Form handler for the Create Portfolio form\"");
   }
 
-  public Context objectToContext(Object object) throws JsonProcessingException {
-    ObjectMapper obj = new ObjectMapper();
-    String jsonString = obj.writerWithDefaultPrettyPrinter().writeValueAsString(object);
-    JsonNode jsonNode = new ObjectMapper().readValue(jsonString, JsonNode.class);
-    Context c = Context.newBuilder(jsonNode).resolver(JsonNodeValueResolver.INSTANCE, JavaBeanValueResolver.INSTANCE,
-        FieldValueResolver.INSTANCE, MapValueResolver.INSTANCE, MethodValueResolver.INSTANCE).build();
-
-    return c;
-  }
 }

@@ -26,17 +26,17 @@ import org.springframework.stereotype.Component;
 import yahoofinance.YahooFinance;
 
 @Component
-public class BuyActivity extends FormReplyActivity<FormReplyContext> {
+public class BuyConfirm extends FormReplyActivity<FormReplyContext> {
 
   private final MessageService messageService;
 
-  public BuyActivity(MessageService messageService) {
+  public BuyConfirm(MessageService messageService) {
     this.messageService = messageService;
   }
 
   @Override
   public ActivityMatcher<FormReplyContext> matcher() {
-    return context -> "buy-asset".equals(context.getFormId()) && "submit".equals(context.getFormValue("action"));
+    return context -> "confirm-Buy".equals(context.getFormId()) && "submit".equals(context.getFormValue("action"));
   }
 
   @Override
@@ -50,28 +50,18 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
     Template template;
 
     // Retrieve their choices and the portfolio they chose
-    String sharesOrPrice = context.getFormValue("buyOptions");
     String ticker = context.getFormValue("ticker");
+    Double shares = Double.parseDouble(context.getFormValue("shares"));
+    Double price = Double.parseDouble(context.getFormValue("price"));
+    Double orderAmount = Double.parseDouble(context.getFormValue("orderAmount"));
     String portName = context.getFormValue("portfolio");
     Portfolio p = Database.getPortfolio(user, portName);
 
-    // Retrieve the ticker price
-    Double price = 1.00;
-    Double shares = 1.00;
-    Double orderAmount = 1.00;
+    // Place order
+    Database.placeOrder(user, p,ticker,shares,price,orderAmount);
     try {
       price = YahooFinance.get(ticker).getQuote().getPrice().doubleValue();
 
-      // Convert shares to dollar value
-      if (sharesOrPrice.equals("shares")) {
-        shares = Double.parseDouble(context.getFormValue("Amount"));
-        orderAmount = shares * price;
-      }
-      // Convert dollar value to shares
-      else {
-        orderAmount = Double.parseDouble(context.getFormValue("Amount"));
-        shares = orderAmount / price;
-      }
 
       //Convert to object and send order confirmation
       handlebars.registerHelpers(new HelperSource());
@@ -104,5 +94,4 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
     return new ActivityInfo().type(ActivityType.FORM).name("Name of the Portfolio")
         .description("\"Form handler for the buyActivity form\"");
   }
-
 }

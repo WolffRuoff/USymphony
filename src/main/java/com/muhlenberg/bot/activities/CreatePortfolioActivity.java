@@ -1,17 +1,22 @@
 package com.muhlenberg.bot.activities;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.muhlenberg.bot.Database;
-import com.muhlenberg.models.Portfolio;
+import com.github.jknack.handlebars.Context;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.github.jknack.handlebars.io.TemplateLoader;
+import com.muhlenberg.bot.ObjectToContext;
+import com.muhlenberg.models.AddClients;
 import com.symphony.bdk.core.activity.ActivityMatcher;
 import com.symphony.bdk.core.activity.form.FormReplyActivity;
 import com.symphony.bdk.core.activity.form.FormReplyContext;
 import com.symphony.bdk.core.activity.model.ActivityInfo;
 import com.symphony.bdk.core.activity.model.ActivityType;
 import com.symphony.bdk.core.service.message.MessageService;
-import com.symphony.bdk.core.service.message.model.Message;
 
 import org.springframework.stereotype.Component;
 
@@ -32,27 +37,39 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
 
   @Override
   public void onActivity(FormReplyContext context) {
+    // Load handlebars stuff
+    TemplateLoader loader = new ClassPathTemplateLoader();
+    loader.setPrefix("/templates");
+    loader.setSuffix(".hbs");
+    Handlebars handlebars = new Handlebars(loader);
+    Template template;
+    
     final String name = context.getFormValue("name");
     final String ticker = context.getFormValue("ticker");
 
+    //Convert JsonNode values to an ArrayList of userIDs
     JsonNode node = context.getFormValues();
-    HashMap<Long, Double> clients = new HashMap<Long, Double>(); 
+    ArrayList<Long> clients = new ArrayList<Long>(); 
     for (JsonNode client : node.path("client-selector")) {
-      clients.put(client.asLong(), 0.0);
+      clients.add(client.asLong());
     }
 
-    final Portfolio p = new Portfolio(name, clients, ticker);
-
-    Database.addPortfolio(context.getInitiator().getUser(), p);
-
-    final String message = "<messageML>Created '" + name + "' Portfolio</messageML>";
-    this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
+    //Sends user new form to input client amounts
+    Context c;
+    try {
+      template = handlebars.compile("addClients");
+      c = ObjectToContext.Convert(new AddClients(name, ticker, clients));
+      this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
+  
 
   @Override
   protected ActivityInfo info() {
     return new ActivityInfo().type(ActivityType.FORM)
-        .name("Name of the Portfolio")
+        .name("Create Portfolio Listener")
         .description("\"Form handler for the Create Portfolio form\"");
   }
 }

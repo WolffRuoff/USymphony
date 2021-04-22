@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,6 +19,8 @@ import com.muhlenberg.models.Portfolio;
 import com.muhlenberg.models.Stock;
 import com.symphony.bdk.gen.api.model.V4User;
 
+import yahoofinance.YahooFinance;
+import yahoofinance.quotes.stock.StockQuote;
 
 /**
  *
@@ -53,14 +56,14 @@ public class Database {
     }
 
     public static void addPortfolio(V4User userID, Portfolio port) {
-        //Create table (won't do anything if it already exists)
+        // Create table (won't do anything if it already exists)
         createNewTable();
 
-        //Make sure portfolio doesn't have existing name
+        // Make sure portfolio doesn't have existing name
         Portfolio portfol = getPortfolio(userID, port.getName());
         int i = 0;
 
-        //If portfolio of same name exists, append i to the name of the new one
+        // If portfolio of same name exists, append i to the name of the new one
         while (portfol != null) {
             i++;
             portfol = getPortfolio(userID, port.getName() + i);
@@ -75,6 +78,45 @@ public class Database {
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, userID.getUserId());
             pstmt.setBytes(2, makeByte(port));
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void placeOrder(V4User userID, Portfolio newPort, String ticker, Double shares, Double price,
+            Double orderAmount) {
+
+        // Make sure portfolio doesn't have existing name
+        Portfolio port = getPortfolio(userID, newPort.getName());
+
+        yahoofinance.Stock stock;
+        try {
+            stock = YahooFinance.get(ticker);
+            StockQuote quote = stock.getQuote();
+
+            // Figure out if stock is largecap
+            BigDecimal marketCap = stock.getStats().getMarketCap();
+            BigDecimal threshold = new BigDecimal(10000000000l);
+            boolean isLargeCap = false;
+            if (marketCap.compareTo(threshold) >= 0) {
+                isLargeCap = true;
+            }
+
+            Stock newStock = new Stock(ticker, stock.getName(), price, quote.getChangeInPercent().doubleValue(),
+                    isLargeCap);
+            newPort.addAsset(newStock, orderAmount);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        // SQL statement for adding a portfolio
+        String sql = "UPDATE warehouses SET portfolio = ? WHERE userid = ? portfolio = ?";
+
+        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setBytes(1, makeByte(newPort));
+            pstmt.setLong(2, userID.getUserId());
+            pstmt.setBytes(3, makeByte(port));
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -106,7 +148,7 @@ public class Database {
         ArrayList<Portfolio> ports = getPortfolioList(user);
         int size = ports.size();
 
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             if (ports.get(i).getName().equals(name)) {
                 return ports.get(i);
             }
@@ -114,7 +156,7 @@ public class Database {
         return null;
     }
 
-    //Serializes portfolio to bytes
+    // Serializes portfolio to bytes
     public static byte[] makeByte(Portfolio port) {
         try {
 
@@ -122,7 +164,7 @@ public class Database {
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(port);
             byte[] portfolioAsBytes = baos.toByteArray();
-            //ByteArrayInputStream bais = new ByteArrayInputStream(portfolioAsBytes);
+            // ByteArrayInputStream bais = new ByteArrayInputStream(portfolioAsBytes);
             return portfolioAsBytes;
         } catch (IOException e) {
             e.printStackTrace();
@@ -130,7 +172,7 @@ public class Database {
         return null;
     }
 
-    //Converts bytes to a portfolio object
+    // Converts bytes to a portfolio object
     public static Portfolio readBytes(byte[] data) {
         try {
             ByteArrayInputStream baip = new ByteArrayInputStream(data);

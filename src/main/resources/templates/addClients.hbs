@@ -1,0 +1,29 @@
+<messageML>
+    <form id="add-Clients">
+        <table>
+            <tbody>
+                <tr>
+                    <td>Client Name</td>
+                    <td>Amount They're Investing</td>
+                </tr>
+                {{#each clients}}
+                <tr>
+                    <td>
+                        <mention uid="{{this}}" />
+                    </td>
+                    <td>
+                        <text-field name="{{this}}" placeholder="Type in dollar amount" required="true"
+                            pattern="^[0-9]*(\.[0-9][0-9])?$" pattern-error-message="Please only insert numbers" />
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <button name="submit" type="action">Create</button>
+
+        <div style="visibility: hidden;">
+            <radio name="portfolio" value="{{name}}" checked="true"></radio>
+            <radio name="ticker" value="{{ticker}}" checked="true"></radio>
+        </div>
+    </form>
+</messageML>
