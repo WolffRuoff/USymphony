@@ -159,13 +159,19 @@ public class Portfolio implements java.io.Serializable {
 
     // Updates portion liquid
     private void rebalancePortfolio() throws IOException {
+        Double amountLiquid = this.portionLiquid * this.size;
+
         updateStocks();
         Double newAmount = 0.0;
-        for(Entry<Stock, Double> stoc : this.assets.entrySet()) {
+        for (Entry<Stock, Double> stoc : this.assets.entrySet()) {
             newAmount += stoc.getKey().getLatestPrice() * stoc.getValue();
         }
-        this.portionLiquid = Math.round(((this.size - newAmount) / this.size) * 100.0) / 100.0;
-        
+        // Update size
+        this.size = (float) (newAmount + amountLiquid);
+
+        // Calculate new portion liquid
+        this.portionLiquid = Math.round((amountLiquid / this.size) * 100.0) / 100.0;
+
     }
 
     // Absolutely critical to override and return stock array. DO NOT DELETE
