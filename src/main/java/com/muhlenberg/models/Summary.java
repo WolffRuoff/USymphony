@@ -9,7 +9,8 @@ public class Summary {
     private double size;
     private String comparisonTicker;
     private double compPercent;
-    private double evaluation;
+    private String evaluation;
+    private String unrealizedGains;
 
     public Summary(Portfolio p) {
         //Update the portfolio values before creating summary
@@ -19,24 +20,27 @@ public class Summary {
         } catch (Exception e) {
             System.out.println(e);
         }
-    
+
+        this.unrealizedGains = String.format("%1$,.2f", p.getUnrealized());
         this.top10Stocks = p.getTop5();
         this.bottom10Stocks = p.getBottom5();
         this.name = p.getName();
-        this.portionLiquid = p.getPortionLiquid();
+        this.portionLiquid = 1d - p.getPortionLiquid();
         this.size = p.getSize();
         this.comparisonTicker= p.getMainComparison();
-        
-        this.evaluation = Math.round(p.getEvaluation()*100) /100;
+        this.evaluation = String.format("%1$,.2f", p.getEvaluation());
     }
 
-    public double getEvaluation() {
+
+    public String getUnrealizedGains() {
+        return this.unrealizedGains;
+    }
+    
+
+    public String getEvaluation() {
         return this.evaluation;
     }
 
-    public void setEvaluation(double evaluation) {
-        this.evaluation = evaluation;
-    }
 
     public String getComparisonTicker() {
         return this.comparisonTicker;

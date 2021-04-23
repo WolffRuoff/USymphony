@@ -1,11 +1,15 @@
 <messageML>
 
+    <table>
+        <tr>
+            <td style="border: none;"> <h1 style="text-align:center;">Overall value: ${{evaluation}}</h1></td>
+            <td style="border: none;"> <h1 style="text-align:center;">Unrealized Gains: {{gains unrealizedGains}}</h1></td>
+        </tr>
+    </table>
 
-<br/>
-    
+    <div style='height:2px;background:#0098ff;margin-top:10px;margin-bottom:10px'> </div>
+
     <h2> Portfolio Summary: {{name}}</h2>
-
-    <h2> The overall value of the Portfolio is $ {{evaluation}} </h2>
 
     <h3> Top 5 Gainers:</h3>
     <table>
@@ -88,26 +92,34 @@
 
     </table>
 
-    <br/>
+    <div style='height:2px;background:#0098ff;margin-top:10px;margin-bottom:10px'> </div>
 
     <div style="text-align: center;">
     <table>
         <tr>
-            <td>
-                <div style="margin-top:5%">
+            <td style="border: none;">
+                <div style="margin-top:6%">
                         <h2> Percentage Currently Invested: {{portionLiquid}}% </h2>
                 </div>
             </td>
-            <td>
+            <td style="border: none;">
                 {{pieChart portionLiquid}}
             </td>
-            <td>
-                <div style="margin-top:5%">
-        	        <h2> This Portfolio Is Exceeding {{comparisonTicker}} by {{compPercent}}% in the past 24hrs</h2>
+
+            <td style="border: none;"> 
+                <div style="margin-top:6%">
+                    <h2>
+                        {{#if (isPos compPercent)}} 
+                            This Portfolio Is Exceeding {{comparisonTicker}} by <span style="color:green;"> +{{compPercent}}% </span> 
+                        {{else}}  
+                            {{#if (isNeg compPercent)}} 
+                                This Portfolio Is Down from {{comparisonTicker}} by <span style="color:red;"> {{compPercent}}% </span> 
+                            {{else}} 
+                                This portfolio is even with {{comparisonTicker}} in the past 24 hrs 
+                            {{/if}}
+                        {{/if}} 
+                    </h2> 
                 </div>
-            </td>
-            <td>
-                {{pieChart compPercent}}
             </td>
         </tr>
     </table>

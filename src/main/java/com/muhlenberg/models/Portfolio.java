@@ -58,12 +58,27 @@ public class Portfolio implements java.io.Serializable {
         for (Stock stock : assets.keySet()) {
             updateVals.add(stock.getSymbol());
         }
+        //Get list of stocks to update
         String[] symbols = updateVals.toArray(new String[updateVals.size()]);
+        //Get new stock valuations
         Map<String, yahoofinance.Stock> stocks = YahooFinance.get(symbols);
+        
+        //Update stock values
         for (Stock stock : assets.keySet()) {
             stock.setLatestPrice(stocks.get(stock.getSymbol()).getQuote().getPrice().doubleValue());
             stock.setChange(stocks.get(stock.getSymbol()).getQuote().getChangeInPercent().doubleValue());
         }
+    }
+
+    public double getUnrealized() {
+        double val = 0.0;
+        for (Map.Entry<Stock, Double> entry : assets.entrySet()) {
+            //                      Current Value   - Value at purchase = gain for given asset
+            val += (entry.getKey().getLatestPrice() * entry.getValue()) -  (entry.getKey().getPurchasePrice() * entry.getValue());           
+            
+        }
+
+        return val;
     }
 
     public double getEvaluation() {
@@ -73,7 +88,7 @@ public class Portfolio implements java.io.Serializable {
             // Add stock price * value of that stock
             val += entry.getKey().getLatestPrice() * entry.getValue();
         }
-
+        
         return val;
 
     }
@@ -245,8 +260,10 @@ public class Portfolio implements java.io.Serializable {
             totalPercentIncrease = totalPercentIncrease + (entry.getKey().getChange() / 100 * percentage);
         }
         // Round output to two decimals
-        return Math.round((totalPercentIncrease * 100)
-                - YahooFinance.get(this.mainComparison).getQuote().getChangeInPercent().doubleValue());
+        return Math.round((totalPercentIncrease * 100)- YahooFinance.get(this.mainComparison)
+                                                                    .getQuote()
+                                                                    .getChangeInPercent()
+                                                                    .doubleValue());
     }
 
     public String getMainComparison() {

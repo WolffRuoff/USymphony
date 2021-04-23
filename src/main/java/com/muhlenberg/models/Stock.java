@@ -4,20 +4,30 @@ public class Stock implements java.io.Serializable{
     private static final long serialVersionUID = 6529685098267757690L;
     private String symbol;
     private String companyName;
+    private double purchasePrice;
     private double latestPrice;
     private double change;
     private boolean isLargeCap;
 
 
-    public Stock(String symbol, String companyName, double latestPrice, double change, boolean isLargeCap) {
+    public Stock(String symbol, String companyName, double purchasePrice, double latestPrice, double change, boolean isLargeCap) {
         this.symbol = symbol;
         this.companyName = companyName;
+        this.purchasePrice = purchasePrice;
         this.latestPrice = latestPrice;
         this.change = change;
         this.isLargeCap = isLargeCap;
     }
 
 
+    public double getPurchasePrice() {
+        return this.purchasePrice;
+    }
+
+    public void setPurchasePrice(double purchasePrice) {
+        this.purchasePrice = purchasePrice;
+    }
+    
     public String getSymbol() {
         return this.symbol;
     }

@@ -40,5 +40,41 @@ public class HelperSource {
         //Return Handlebars SafeString so that handlebars does not auto escape all html characters
         return new Handlebars.SafeString(String.format(pieChart, size, size, fillStyle));
         }
+
+
+    public SafeString gains(String value) {
+
+    String formatting; 
+    
+    //Determine if pos or neg
+    String cleanStr = value.replaceAll("^[ \t$]+ |[,]", "");
+    double d = Double.parseDouble(cleanStr);
+
+
+    if (d < 0) {
+        formatting = "$<span style=\"color:red;\"> %s </span> ";
+    }
+    else {
+        formatting = "$<span style=\"color:green;\"> +%s </span> ";
+    }
+
+        //Return Handlebars SafeString so that handlebars does not auto escape all html characters
+    return new Handlebars.SafeString(String.format(formatting, value));
+    }
+
+    public SafeString monoProgressBar(double val) {
+
+    String progressBar = "<div style=\"border:#999 1px solid;padding:.15em;border-radius:0.4em;\"> <div style=\"background:repeating-linear-gradient(-45deg,rgba(221,221,221,.4),rgba(221,221,221,.4) .5em,rgba(187,187,187,.2) .5em,rgba(187,187,187,.2) 1em);border-radius:0.3em;\"> <div style=\"background:repeating-linear-gradient(-45deg,#a7d4e8,#a7d4e8 .5em,#38b1e8 .5em,#38b1e8 1em);height:.6em;width:%d%%;border-radius:0.3em;\"> </div> </div> </div>";
+
+        int percentage;
+        if (val < 1) {
+            percentage = (int) Math.round(val * 100);
+        }
+        else {
+            percentage = (int) Math.round(val);
+        }
+        return new Handlebars.SafeString(String.format(progressBar, percentage));
+    };
+
     // Other helper methods
 }

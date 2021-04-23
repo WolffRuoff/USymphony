@@ -16,16 +16,9 @@ import java.util.HashMap;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Jackson2Helper;
-import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Context;
-import com.github.jknack.handlebars.context.FieldValueResolver;
-import com.github.jknack.handlebars.context.JavaBeanValueResolver;
-import com.github.jknack.handlebars.context.MapValueResolver;
-import com.github.jknack.handlebars.context.MethodValueResolver;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-
-
 
 
 @Component
@@ -51,9 +44,9 @@ public class SummarySlashHandler {
   public void onSlashSummarize(CommandContext context) {
 
     
-    Stock s = new Stock("AAPL", "Apple", 125.02, 0.0, true);
-    Stock s2 = new Stock("XOM", "Exxon Mobil", 15.21, -.15, true);
-    Stock s3 = new Stock("TMUS", "T-Mobile", 156, 1.15, true);
+    Stock s = new Stock("AAPL", "Apple", 125.0, 125.02, 0.0, true);
+    Stock s2 = new Stock("XOM", "Exxon Mobil", 125.0, 15.21, -.15, true);
+    Stock s3 = new Stock("TMUS", "T-Mobile", 125.0, 156, 1.15, true);
     HashMap<Long, Double> h = new HashMap<Long, Double>();
     h.put(context.getInitiator().getUser().getUserId(), .215);
     
@@ -67,7 +60,8 @@ public class SummarySlashHandler {
     
     try {
 
-      Context c = objectToContext(new Summary(p));
+      Context c = ObjectToContext.Convert(new Summary(p));
+      //System.out.println(template.apply(c));
       this.messageService.send(context.getStreamId(), template.apply(c));
 
     } catch (JsonProcessingException e1) {
@@ -80,21 +74,5 @@ public class SummarySlashHandler {
     }   
   }
 
-  public Context objectToContext(Object object) throws JsonProcessingException {
-    ObjectMapper obj = new ObjectMapper();
-    String jsonString = obj.writerWithDefaultPrettyPrinter().writeValueAsString(object);
-    JsonNode jsonNode = new ObjectMapper().readValue(jsonString, JsonNode.class);
-    Context c = Context
-              .newBuilder(jsonNode)
-              .resolver(JsonNodeValueResolver.INSTANCE,
-                      JavaBeanValueResolver.INSTANCE,
-                      FieldValueResolver.INSTANCE,
-                      MapValueResolver.INSTANCE,
-                      MethodValueResolver.INSTANCE
-              )
-              .build();
-
-    return c;
-  }
 }
 
