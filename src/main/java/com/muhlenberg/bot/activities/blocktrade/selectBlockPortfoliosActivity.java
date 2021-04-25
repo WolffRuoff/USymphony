@@ -52,6 +52,7 @@ public class selectBlockPortfoliosActivity extends FormReplyActivity<FormReplyCo
         loader.setPrefix("/templates/blocktrade");
         loader.setSuffix(".hbs");
         Handlebars handlebars = new Handlebars(loader);
+        handlebars.registerHelpers(new HelperSource());
         Template template;
 
         // Retrieve their choices and the portfolios they chose

@@ -46,6 +46,7 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
     loader.setPrefix("/templates/portfolio");
     loader.setSuffix(".hbs");
     Handlebars handlebars = new Handlebars(loader);
+    handlebars.registerHelpers(new HelperSource());
     Template template;
 
     // Retrieve their choice and the portfolio they chose
@@ -54,8 +55,6 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
     Portfolio p = Database.getPortfolio(user, portName);
 
     if (choice.equals("summary")) {
-      handlebars.registerHelpers(new HelperSource());
-      //handlebars.registerHelper("json", Jackson2Helper.INSTANCE);
       try {
         template = handlebars.compile("summary");
         Context c = ObjectToContext.Convert(new Summary(p));

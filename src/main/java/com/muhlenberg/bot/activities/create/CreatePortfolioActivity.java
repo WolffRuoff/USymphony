@@ -46,6 +46,7 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
     loader.setPrefix("/templates/create");
     loader.setSuffix(".hbs");
     Handlebars handlebars = new Handlebars(loader);
+    handlebars.registerHelpers(new HelperSource());
     Template template;
 
     final String name = context.getFormValue("name");

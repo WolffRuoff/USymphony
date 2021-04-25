@@ -11,7 +11,7 @@
             {{#each clients}}
             <tr>
                 <td><mention uid="{{userID}}"/></td>
-                <td>${{amountInvested}}</td>
+                <td>${{round 2 amountInvested}}</td>
             </tr>
             {{/each}}
         </tbody>

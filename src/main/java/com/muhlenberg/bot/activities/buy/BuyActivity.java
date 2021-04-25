@@ -47,6 +47,7 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
     loader.setPrefix("/templates/buy");
     loader.setSuffix(".hbs");
     Handlebars handlebars = new Handlebars(loader);
+    handlebars.registerHelpers(new HelperSource());
     Template template;
 
     // Retrieve their choices and the portfolio they chose
