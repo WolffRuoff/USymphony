@@ -37,7 +37,7 @@
             <tr>            
                 <td><cash tag="{{symbol}}"/></td>
                 <td> {{companyName}} </td>
-                <td> {{latestPrice}} </td>
+                <td> ${{latestPrice}} </td>
                 <td> {{#if (isPos change)}} <emoji shortcode = "chart_with_upwards_trend"/>  <span style="color:green;"> {{change}}% </span> </td>
                         {{else}}  {{#if (isNeg change)}}  <emoji shortcode = "chart_with_downwards_trend"/>  <span style="color:red;"> {{change}}% </span> </td>
                             {{else}} 
@@ -77,7 +77,7 @@
             <tr>            
                 <td><cash tag="{{symbol}}"/></td>
                 <td> {{companyName}} </td>
-                <td> {{latestPrice}} </td>
+                <td> ${{latestPrice}} </td>
                 <td> {{#if (isPos change)}} <emoji shortcode = "chart_with_upwards_trend"/>  <span style="color:green;"> {{change}}% </span> </td>
                         {{else}}  {{#if (isNeg change)}}  <emoji shortcode = "chart_with_downwards_trend"/>  <span style="color:red;"> {{change}}% </span> </td>
                             {{else}} 
