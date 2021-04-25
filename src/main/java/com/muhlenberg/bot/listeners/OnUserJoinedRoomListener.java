@@ -1,4 +1,4 @@
-package com.muhlenberg.bot;
+package com.muhlenberg.bot.listeners;
 
 import com.symphony.bdk.core.service.datafeed.RealTimeEventListener;
 import com.symphony.bdk.core.service.message.MessageService;

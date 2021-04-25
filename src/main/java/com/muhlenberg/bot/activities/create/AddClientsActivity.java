@@ -1,4 +1,4 @@
-package com.muhlenberg.bot.activities;
+package com.muhlenberg.bot.activities.create;
 
 import java.util.HashMap;
 import java.util.Iterator;

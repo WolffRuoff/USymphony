@@ -1,4 +1,4 @@
-package com.muhlenberg.bot.activities;
+package com.muhlenberg.bot.activities.buy;
 
 import java.io.IOException;
 
@@ -44,7 +44,7 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
     V4User user = context.getInitiator().getUser();
     // Load handlebars stuff
     TemplateLoader loader = new ClassPathTemplateLoader();
-    loader.setPrefix("/templates");
+    loader.setPrefix("/templates/buy");
     loader.setSuffix(".hbs");
     Handlebars handlebars = new Handlebars(loader);
     Template template;

@@ -48,7 +48,7 @@ public class SelectPortfolioView extends FormReplyActivity<FormReplyContext> {
     // If new-port create new portfolio
     if (choice.equals("new-port")) {
       try {
-        template = handlebars.compile("createPortfolio");
+        template = handlebars.compile("create/createPortfolio");
         this.messageService.send(context.getSourceEvent().getStream(), template.apply(user));
       } catch (IOException e) {
         e.printStackTrace();
@@ -61,7 +61,7 @@ public class SelectPortfolioView extends FormReplyActivity<FormReplyContext> {
       // If in the /portfolio workflow
       if (nextStep.equals("view")) {
         try {
-          template = handlebars.compile("clientBreakdownOrSummary");
+          template = handlebars.compile("portfolio/clientBreakdownOrSummary");
           this.messageService.send(context.getSourceEvent().getStream(), template.apply(choice));
         } catch (IOException e) {
           e.printStackTrace();
@@ -70,7 +70,7 @@ public class SelectPortfolioView extends FormReplyActivity<FormReplyContext> {
       //If in the /buy workflow
       else if (nextStep.equals("buy")) {
         try {
-          template = handlebars.compile("buyAsset");
+          template = handlebars.compile("buy/buyAsset");
           this.messageService.send(context.getSourceEvent().getStream(), template.apply(choice));
         } catch (IOException e) {
           e.printStackTrace();

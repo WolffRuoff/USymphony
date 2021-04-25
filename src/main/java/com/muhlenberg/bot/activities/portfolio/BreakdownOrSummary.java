@@ -1,4 +1,4 @@
-package com.muhlenberg.bot.activities;
+package com.muhlenberg.bot.activities.portfolio;
 
 import java.io.IOException;
 
@@ -43,7 +43,7 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
     V4User user = context.getInitiator().getUser();
     // Load handlebars stuff
     TemplateLoader loader = new ClassPathTemplateLoader();
-    loader.setPrefix("/templates");
+    loader.setPrefix("/templates/portfolio");
     loader.setSuffix(".hbs");
     Handlebars handlebars = new Handlebars(loader);
     Template template;

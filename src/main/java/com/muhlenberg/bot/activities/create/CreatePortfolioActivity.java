@@ -1,4 +1,4 @@
-package com.muhlenberg.bot.activities;
+package com.muhlenberg.bot.activities.create;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
   public void onActivity(FormReplyContext context) {
     // Load handlebars stuff
     TemplateLoader loader = new ClassPathTemplateLoader();
-    loader.setPrefix("/templates");
+    loader.setPrefix("/templates/create");
     loader.setSuffix(".hbs");
     Handlebars handlebars = new Handlebars(loader);
     Template template;

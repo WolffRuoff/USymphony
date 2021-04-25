@@ -1,5 +1,7 @@
-package com.muhlenberg.bot;
+package com.muhlenberg.bot.listeners;
 
+import com.muhlenberg.bot.Database;
+import com.muhlenberg.bot.ObjectToContext;
 import com.muhlenberg.models.*;
 
 import com.symphony.bdk.core.activity.command.CommandContext;
@@ -104,7 +106,7 @@ public class SlashHandler {
     V4User user = context.getInitiator().getUser();
 
     try {
-      this.template = handlebars.compile("createPortfolio");
+      this.template = handlebars.compile("create/createPortfolio");
       this.messageService.send(context.getStreamId(), template.apply(user));
     } catch (JsonProcessingException e) {
       e.printStackTrace();
@@ -153,7 +155,7 @@ public class SlashHandler {
     SelectPortfolio portL = new SelectPortfolio("blockTrade", portfolioList);
 
     try {
-      this.template = handlebars.compile("blockTrade");
+      this.template = handlebars.compile("blocktrade/blockTrade");
       Context c = ObjectToContext.Convert(portL);
       this.messageService.send(context.getStreamId(), template.apply(c));
     } catch (JsonProcessingException e) {

@@ -1,4 +1,4 @@
-package com.muhlenberg.bot.activities;
+package com.muhlenberg.bot.activities.blocktrade;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ import com.muhlenberg.bot.Database;
 import com.muhlenberg.bot.HelperSource;
 import com.muhlenberg.bot.ObjectToContext;
 import com.muhlenberg.models.BlockOrderDetails;
+import com.muhlenberg.models.BlockPortfolio;
 import com.muhlenberg.models.OrderDetails;
 import com.muhlenberg.models.Portfolio;
 import com.muhlenberg.models.SelectPortfolio;
@@ -31,18 +32,18 @@ import org.springframework.stereotype.Component;
 import yahoofinance.YahooFinance;
 
 @Component
-public class selectBlockPortfoliosActivity extends FormReplyActivity<FormReplyContext> {
+public class BlockAllocateActivity extends FormReplyActivity<FormReplyContext> {
 
     private final MessageService messageService;
 
-    public selectBlockPortfoliosActivity(MessageService messageService) {
+    public BlockAllocateActivity(MessageService messageService) {
         this.messageService = messageService;
     }
 
     @Override
     public ActivityMatcher<FormReplyContext> matcher() {
-        return context -> "selectBlockPortfolios".equals(context.getFormId())
-                && "blockTrade".equals(context.getFormValue("action"));
+        return context -> "blockAllocate".equals(context.getFormId())
+                && "submit".equals(context.getFormValue("action"));
     }
 
     @Override
@@ -50,61 +51,71 @@ public class selectBlockPortfoliosActivity extends FormReplyActivity<FormReplyCo
         V4User user = context.getInitiator().getUser();
         // Load handlebars stuff
         TemplateLoader loader = new ClassPathTemplateLoader();
-        loader.setPrefix("/templates");
+        loader.setPrefix("/templates/blocktrade");
         loader.setSuffix(".hbs");
         Handlebars handlebars = new Handlebars(loader);
         Template template;
 
-        // Retrieve their choices and the portfolios they chose
-        String sharesOrPrice = context.getFormValue("buyOptions");
+        // Retrieve their choices
         String ticker = context.getFormValue("ticker");
+        Double shares = Double.parseDouble(context.getFormValue("shares"));
+        Double price = Double.parseDouble(context.getFormValue("price"));
+        Double orderAmount = Double.parseDouble(context.getFormValue("orderAmount"));
 
-        // Retrieve the ticker price
-        Double price = 1.00;
-        Double shares = 1.00;
-        Double orderAmount = 1.00;
+    
         try {
-            price = YahooFinance.get(ticker).getQuote().getPrice().doubleValue();
-
-            // Convert shares to dollar value
-            if (sharesOrPrice.equals("shares")) {
-                shares = Double.parseDouble(context.getFormValue("Amount"));
-                orderAmount = shares * price;
-            }
-            // Convert dollar value to shares
-            else {
-                orderAmount = Double.parseDouble(context.getFormValue("Amount"));
-                shares = orderAmount / price;
-            }
-
-            // Retrieve portfolios checked
+            // Retrieve order information
             JsonNode node = context.getFormValues();
-            ArrayList<Portfolio> portList = new ArrayList<Portfolio>();
+            boolean orderedTooMuch = false;
+            ArrayList<BlockPortfolio> blockList = new ArrayList<BlockPortfolio>();
             Iterator<java.util.Map.Entry<String, JsonNode>> ports = node.fields();
+
+            String portName;
+            Double maxP;
+            Double toOrder;
+            Double percentOrdered;
             while (ports.hasNext()) {
                 java.util.Map.Entry<String, JsonNode> portNode = ports.next();
                 // Make sure entry is a portfolio
                 if (portNode.getKey().charAt(0) == '9') {
-                    portList.add(Database.getPortfolio(user, portNode.getValue().asText()));
+                    //Retrieve portfolio, name, order percent,  max percent
+                    portName = portNode.getKey().substring(1);
+                    maxP = Double.parseDouble(context.getFormValue("8" + portName));
+                    toOrder = portNode.getValue().asDouble();
+
+                    //Add percent to total percent ordered
+                    percentOrdered += toOrder;
+
+                    //Retrieve Portfolio
+                    Portfolio p = Database.getPortfolio(user, portName);
+
+                    //Convert percents to dollar values
+                    maxP = (maxP/100.0) * orderAmount;
+                    toOrder = (toOrder/100) * orderAmount;
+
+                    //check if amount is more that maxP (invalid)
+                    if(toOrder > maxP) {orderedTooMuch = true;}
+
+                    blockList.add(new BlockPortfolio(p, toOrder));
                 }
             }
 
             // Create object for order details
             BlockOrderDetails orderDets = new BlockOrderDetails(portList, ticker, shares, price, orderAmount);
-            //Make sure portfolios have enough liquid assets for the purchase
+            // Make sure portfolios have enough liquid assets for the purchase
             if (orderDets.getTotalPurchasePower() >= orderAmount) {
                 // Convert to context and send order confirmation
                 handlebars.registerHelpers(new HelperSource());
                 template = handlebars.compile("blockAllocation");
                 Context c = ObjectToContext.Convert(orderDets);
                 this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
-            }
-            else {
+            } else {
                 try {
-                    final String message = "<messageML>These portfolios only have $" + orderDets.getTotalPurchasePower() + " of liquid assets. <br/> Please lower the order amount or add more portfolios.</messageML>";
+                    final String message = "<messageML>These portfolios only have $" + orderDets.getTotalPurchasePower()
+                            + " of liquid assets. <br/> Please lower the order amount or add more portfolios.</messageML>";
                     this.messageService.send(context.getSourceEvent().getStream(),
                             Message.builder().content(message).build());
-    
+
                     template = handlebars.compile("blockTrade");
                     ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
                     SelectPortfolio portL = new SelectPortfolio("blockTrade", portfolioList);
@@ -137,8 +148,8 @@ public class selectBlockPortfoliosActivity extends FormReplyActivity<FormReplyCo
 
     @Override
     protected ActivityInfo info() {
-        return new ActivityInfo().type(ActivityType.FORM).name("Name of the Portfolio")
-                .description("\"Form handler for the buyActivity form\"");
+        return new ActivityInfo().type(ActivityType.FORM).name("Block Allocate Activity")
+                .description("\"Form handler for the blockAllocate form\"");
     }
 
 }

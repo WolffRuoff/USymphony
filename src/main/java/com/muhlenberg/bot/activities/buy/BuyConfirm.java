@@ -1,4 +1,4 @@
-package com.muhlenberg.bot.activities;
+package com.muhlenberg.bot.activities.buy;
 
 import com.muhlenberg.bot.Database;
 import com.muhlenberg.models.Portfolio;
