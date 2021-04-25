@@ -1,0 +1,31 @@
+<messageML>
+    <h2>Review Block Trade</h2>
+
+    <table>
+        <tbody>
+            <tr>
+                <td>Portfolio Name</td>
+                <td>Price Allocated</td>
+                <td>Percent Allocated</td>
+                <td>Remaining Liquidity After Purchase</td> 
+            </tr>
+            {{#each portList}}
+            <tr>
+                <td>{{name}}</td>
+                <td>${{round 2 priceAllocated}}</td>
+                <td>{{round 3 percentAllocated}}%</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <form id="blockOrderConfirm">
+        <button name="submit" type="action">Review Order</button>
+
+        <div style="visibility: hidden;">
+            <radio name="ticker" value="{{ticker}}" checked="true"></radio>
+            <radio name="price" value="{{price}}" checked="true"></radio>
+            <radio name="shares" value="{{shares}}" checked="true"></radio>
+            <radio name="orderAmount" value="{{orderAmount}}" checked="true"></radio>
+        </div>
+    </form>
+</messageML>

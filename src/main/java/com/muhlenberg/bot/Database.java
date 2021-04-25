@@ -103,7 +103,7 @@ public class Database {
                 isLargeCap = true;
             }
 
-            Stock newStock = new Stock(ticker, stock.getName(), price, quote.getChangeInPercent().doubleValue(),
+            Stock newStock = new Stock(ticker, stock.getName(), price, price, quote.getChangeInPercent().doubleValue(),
                     isLargeCap);
             newPort.addAsset(newStock, shares);
         } catch (IOException e1) {
@@ -192,9 +192,9 @@ public class Database {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Stock s = new Stock("AAPL", "Apple", 125.02, 0.0, true);
-        Stock s2 = new Stock("XOM", "Exxon Mobil", 15.21, -.15, true);
-        Stock s3 = new Stock("TMUS", "T-Mobile", 156, 1.15, true);
+        Stock s = new Stock("AAPL", "Apple", 125.02, 125.02, 0.0, true);
+        Stock s2 = new Stock("XOM", "Exxon Mobil", 15.21, 15.21, -.15, true);
+        Stock s3 = new Stock("TMUS", "T-Mobile", 156, 156, 1.15, true);
         HashMap<Long, Double> h = new HashMap<Long, Double>();
         V4User user = new V4User();
         Long uId = Long.valueOf(349026222357189L);

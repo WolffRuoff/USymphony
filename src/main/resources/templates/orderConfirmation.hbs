@@ -5,11 +5,11 @@
     <p><b>Ticker: </b>
         <cash tag="{{ticker}}" />
     </p>
-    <p><b>Current Price: </b>${{price}}</p><br />
+    <p><b>Current Price: </b>${{round 2 price}}</p><br />
 
     <h2>Order Details</h2>
-    <p><b>Number of Shares: </b>{{shares}}</p>
-    <p><b>Dollar Value: </b>${{orderAmount}}</p><br /><br />
+    <p><b>Number of Shares: </b>{{round 3 shares}}</p>
+    <p><b>Dollar Value: </b>${{round 2 orderAmount}}</p><br /><br />
 
 
     <form id="confirm-Buy">

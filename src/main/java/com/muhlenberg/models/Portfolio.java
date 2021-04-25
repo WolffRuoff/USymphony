@@ -38,19 +38,6 @@ public class Portfolio implements java.io.Serializable {
         this.mainComparison = mainComparison;
     }
 
-    public Portfolio(String name, HashMap<Long, Double> clients, String mainComp) {
-        this.name = name;
-        this.size = 0;
-        this.portionLiquid = 0.0;
-        this.clientBreakdown = clients;
-        this.assets = new HashMap<Stock, Double>();
-        if ("".equals(mainComp)) {
-            this.mainComparison = "^GSPC";
-        } else {
-            this.mainComparison = mainComp;
-        }
-    }
-
     // Provide method to update stock changes. Should be called every time the
     // change is checked. Needed so that top5 and bottom5 changes will still work.
     public void updateStocks() throws IOException {
@@ -173,7 +160,7 @@ public class Portfolio implements java.io.Serializable {
     }
 
     // Updates portion liquid
-    private void rebalancePortfolio() throws IOException {
+    public void rebalancePortfolio() throws IOException {
         Double amountLiquid = this.portionLiquid * this.size;
 
         updateStocks();
@@ -185,7 +172,7 @@ public class Portfolio implements java.io.Serializable {
         this.size = (float) (newAmount + amountLiquid);
 
         // Calculate new portion liquid
-        this.portionLiquid = Math.round((amountLiquid / this.size) * 100.0) / 100.0;
+        this.portionLiquid = amountLiquid / this.size;
 
     }
 

@@ -74,7 +74,7 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
       }
 
       // Make sure portfolio has enough liquid for the purchase
-      Double liquidAmount =  Math.round((p.getSize() * p.getPortionLiquid()) * 100.0) / 100.0;
+      Double liquidAmount =  p.getSize() * p.getPortionLiquid();
       if (liquidAmount >= orderAmount) {
 
         // Convert to object and send order confirmation
@@ -90,8 +90,8 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
       }
       // Portfolio doesn't have enough liquid for purchase
       else {
-        final String message = "<messageML>'" + p.getName() + "' doesn't have enough liquid assets. It only has $"
-            + liquidAmount + ". Please try again.</messageML>";
+        final String message = "<messageML><div style=\"color:red;\">'" + p.getName() + "' doesn't have enough liquid assets. It only has $"
+            + (Math.round(liquidAmount * 100.0) / 100.0) + ". Please try again.</div></messageML>";
         this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
         template = handlebars.compile("buyAsset");
         this.messageService.send(context.getSourceEvent().getStream(), template.apply(p.getName()));

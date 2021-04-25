@@ -1,0 +1,36 @@
+<messageML>
+    <h2>Allocate Block Trade Between Selected Portfolios</h2>
+    <h3>Blank text fields will evenly split the remaining percentage of the block allocation.</h3>
+    <form id="blockAllocate">
+        <table>
+            <tbody>
+                <tr>
+                    <td>Portfolio Name</td>
+                    <td>Percent Allocated</td>
+                    <td>Maximum Percent (Based on liquidity)</td>
+                </tr>
+                {{#each portList}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>
+                        <text-field name="9{{name}}" placeholder="Type in percent allocated" required="true"
+                            pattern="^[0-9]*(\.[0-9][0-9])?$" pattern-error-message="Please only insert numbers" />
+                    </td>
+                    <td>{{round 3 maxPercent}}% <div style="visibility: hidden;">
+                            <radio name="8{{name}}" value="{{maxPercent}}" checked="true"></radio>
+                        </div>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <button name="submit" type="action">Review Order</button>
+
+        <div style="visibility: hidden;">
+            <radio name="ticker" value="{{ticker}}" checked="true"></radio>
+            <radio name="price" value="{{price}}" checked="true"></radio>
+            <radio name="shares" value="{{shares}}" checked="true"></radio>
+            <radio name="orderAmount" value="{{orderAmount}}" checked="true"></radio>
+        </div>
+    </form>
+</messageML>

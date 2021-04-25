@@ -2,6 +2,7 @@ package com.muhlenberg.bot.activities;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.jknack.handlebars.Context;
@@ -9,14 +10,18 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
+import com.muhlenberg.bot.Database;
 import com.muhlenberg.bot.ObjectToContext;
 import com.muhlenberg.models.AddClients;
+import com.muhlenberg.models.Portfolio;
+import com.muhlenberg.models.Stock;
 import com.symphony.bdk.core.activity.ActivityMatcher;
 import com.symphony.bdk.core.activity.form.FormReplyActivity;
 import com.symphony.bdk.core.activity.form.FormReplyContext;
 import com.symphony.bdk.core.activity.model.ActivityInfo;
 import com.symphony.bdk.core.activity.model.ActivityType;
 import com.symphony.bdk.core.service.message.MessageService;
+import com.symphony.bdk.core.service.message.model.Message;
 
 import org.springframework.stereotype.Component;
 
@@ -31,8 +36,7 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
 
   @Override
   public ActivityMatcher<FormReplyContext> matcher() {
-    return context -> "create-portfolio".equals(context.getFormId())
-        && "submit".equals(context.getFormValue("action"));
+    return context -> "create-portfolio".equals(context.getFormId()) && "submit".equals(context.getFormValue("action"));
   }
 
   @Override
@@ -43,33 +47,46 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
     loader.setSuffix(".hbs");
     Handlebars handlebars = new Handlebars(loader);
     Template template;
-    
-    final String name = context.getFormValue("name");
-    final String ticker = context.getFormValue("ticker");
 
-    //Convert JsonNode values to an ArrayList of userIDs
+    final String name = context.getFormValue("name");
+    String ticker = context.getFormValue("ticker");
+    if (ticker.equals("")) {
+      ticker = "^GSPC";
+    }
+
+    // Convert JsonNode values to an ArrayList of userIDs
     JsonNode node = context.getFormValues();
-    ArrayList<Long> clients = new ArrayList<Long>(); 
+    ArrayList<Long> clients = new ArrayList<Long>();
     for (JsonNode client : node.path("client-selector")) {
       clients.add(client.asLong());
     }
+    if (clients.size() > 0) {
 
-    //Sends user new form to input client amounts
-    Context c;
-    try {
-      template = handlebars.compile("addClients");
-      c = ObjectToContext.Convert(new AddClients(name, ticker, clients));
-      this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
-    } catch (IOException e) {
-      e.printStackTrace();
+      // Sends user new form to input client amounts
+      Context c;
+      try {
+        template = handlebars.compile("addClients");
+        c = ObjectToContext.Convert(new AddClients(name, ticker, clients));
+        this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    } else {
+      // no clients!
+      // Create portfolio and add it to the database
+      final Portfolio p = new Portfolio(name, 0, 1.0D, new HashMap<Long, Double>(), new HashMap<Stock, Double>(),
+          ticker);
+      Database.addPortfolio(context.getInitiator().getUser(), p);
+
+      // Send confirmation message
+      final String message = "<messageML>Created '" + name + "' Portfolio</messageML>";
+      this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
     }
   }
-  
 
   @Override
   protected ActivityInfo info() {
-    return new ActivityInfo().type(ActivityType.FORM)
-        .name("Create Portfolio Listener")
+    return new ActivityInfo().type(ActivityType.FORM).name("Create Portfolio Listener")
         .description("\"Form handler for the Create Portfolio form\"");
   }
 }

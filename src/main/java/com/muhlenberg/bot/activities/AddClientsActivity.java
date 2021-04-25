@@ -44,6 +44,7 @@ public class AddClientsActivity extends FormReplyActivity<FormReplyContext> {
         float size = 0;
         while (fields.hasNext()) {
             java.util.Map.Entry<String, JsonNode> field = fields.next();
+            //Makes it only add client numbers and ignore other fields
             try {
                 size += field.getValue().asDouble();
                 clientsAm.put(Long.parseLong(field.getKey()), field.getValue().asDouble());

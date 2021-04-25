@@ -6,22 +6,13 @@ import com.symphony.bdk.core.activity.command.CommandContext;
 import com.symphony.bdk.core.service.message.MessageService;
 import com.symphony.bdk.gen.api.model.V4User;
 import com.symphony.bdk.spring.annotation.Slash;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Context;
-import com.github.jknack.handlebars.context.FieldValueResolver;
-import com.github.jknack.handlebars.context.JavaBeanValueResolver;
-import com.github.jknack.handlebars.context.MapValueResolver;
-import com.github.jknack.handlebars.context.MethodValueResolver;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 
@@ -63,7 +54,7 @@ public class SlashHandler {
       // Try to display selectPortfolio message
       try {
         this.template = handlebars.compile("selectPortfolio");
-        Context c = objectToContext(portL);
+        Context c = ObjectToContext.Convert(portL);
         this.messageService.send(context.getStreamId(), template.apply(c));
       } catch (JsonProcessingException e) {
         e.printStackTrace();
@@ -92,7 +83,7 @@ public class SlashHandler {
       // Try to display selectPortfolio message
       try {
         this.template = handlebars.compile("selectPortfolio");
-        Context c = objectToContext(portL);
+        Context c = ObjectToContext.Convert(portL);
         this.messageService.send(context.getStreamId(), template.apply(c));
       } catch (JsonProcessingException e) {
         e.printStackTrace();
@@ -137,7 +128,7 @@ public class SlashHandler {
       // Try to display selectPortfolio message
       try {
         this.template = handlebars.compile("selectPortfolio");
-        Context c = objectToContext(portL);
+        Context c = ObjectToContext.Convert(portL);
         this.messageService.send(context.getStreamId(), template.apply(c));
       } catch (JsonProcessingException e) {
         e.printStackTrace();
@@ -152,13 +143,23 @@ public class SlashHandler {
 
   }
 
-  public Context objectToContext(Object object) throws JsonProcessingException {
-    ObjectMapper obj = new ObjectMapper();
-    String jsonString = obj.writerWithDefaultPrettyPrinter().writeValueAsString(object);
-    JsonNode jsonNode = new ObjectMapper().readValue(jsonString, JsonNode.class);
-    Context c = Context.newBuilder(jsonNode).resolver(JsonNodeValueResolver.INSTANCE, JavaBeanValueResolver.INSTANCE,
-        FieldValueResolver.INSTANCE, MapValueResolver.INSTANCE, MethodValueResolver.INSTANCE).build();
+  // Command to Make a new block trade
+  @Slash(value = "/blocktrade", mentionBot = true)
+  public void onSlashBlockTrade(CommandContext context) {
+    V4User user = context.getInitiator().getUser();
 
-    return c;
+    // Gather list of portfolios belonging to the user and place in an object
+    ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
+    SelectPortfolio portL = new SelectPortfolio("blockTrade", portfolioList);
+
+    try {
+      this.template = handlebars.compile("blockTrade");
+      Context c = ObjectToContext.Convert(portL);
+      this.messageService.send(context.getStreamId(), template.apply(c));
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+    } catch (IOException e1) {
+      e1.printStackTrace();
+    }
   }
 }

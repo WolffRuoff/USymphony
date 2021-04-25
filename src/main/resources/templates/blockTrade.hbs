@@ -1,0 +1,24 @@
+<messageML>
+    <h2>Purchase Block Trade</h2>
+    <form id="selectBlockPortfolios">
+        <h3>Ticker Input</h3>
+        <text-field name="ticker" required="true" placeholder="Type ticker name" />
+
+        <h3>Dropdown Select</h3>
+        <select name="buyOptions">
+            <option value="shares">Number of Shares</option>
+            <option value="price">Price</option>
+        </select>
+
+        <h3>Amount Input</h3>
+        <text-field name="Amount" placeholder="Type in amount" required="true" pattern="^[0-9]*(\.[0-9][0-9])?$"
+            pattern-error-message="Please only insert numbers" />
+
+        <h3>Please select the portfolios you plan to buy for</h3>
+        {{#each portfolioList}}
+        <checkbox name="9{{name}}" value="{{name}}">{{name}}</checkbox>
+        {{/each}}
+
+        <button type="action" name="blockTrade">Next</button>
+    </form>
+</messageML>

@@ -10,9 +10,9 @@ public class OrderDetails {
     public OrderDetails(Portfolio port, String ticker, Double shares, Double price, Double orderAmount) {
         this.portName = port.getName();
         this.ticker = ticker;
-        this.shares = Math.round(shares * 1000.0) / 1000.0;
-        this.price = Math.round(price * 100.0) / 100.0;
-        this.orderAmount = Math.round(orderAmount * 100.0) / 100.0;
+        this.shares = shares;
+        this.price = price;
+        this.orderAmount = orderAmount;
     }
     
     public String getPortName() {
