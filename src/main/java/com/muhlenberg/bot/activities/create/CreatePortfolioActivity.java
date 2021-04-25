@@ -11,6 +11,7 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import com.muhlenberg.bot.Database;
+import com.muhlenberg.bot.HelperSource;
 import com.muhlenberg.bot.ObjectToContext;
 import com.muhlenberg.models.AddClients;
 import com.muhlenberg.models.Portfolio;

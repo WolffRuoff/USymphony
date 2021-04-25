@@ -16,7 +16,7 @@
                         <text-field name="9{{name}}" placeholder="Type in percent allocated" required="true"
                             pattern="^[0-9]*(\.[0-9][0-9])?$" pattern-error-message="Please only insert numbers" />
                     </td>
-                    <td>{{round 3 maxPercent}}% <div style="visibility: hidden;">
+                    <td>{{round 3 maxPercent}}% <div style="visibility: hidden; font-size: 0vw;">
                             <radio name="8{{name}}" value="{{maxPercent}}" checked="true"></radio>
                         </div>
                     </td>
@@ -26,7 +26,7 @@
         </table>
         <button name="submit" type="action">Review Order</button>
 
-        <div style="visibility: hidden;">
+        <div style="visibility: hidden; font-size: 0vw;">
             <radio name="ticker" value="{{ticker}}" checked="true"></radio>
             <radio name="price" value="{{price}}" checked="true"></radio>
             <radio name="shares" value="{{shares}}" checked="true"></radio>
