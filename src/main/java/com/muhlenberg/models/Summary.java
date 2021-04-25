@@ -25,7 +25,7 @@ public class Summary {
         this.top10Stocks = p.getTop5();
         this.bottom10Stocks = p.getBottom5();
         this.name = p.getName();
-        this.portionLiquid = 1d - p.getPortionLiquid();
+        this.portionLiquid = Math.round( (1d - p.getPortionLiquid()) * 100) / 100;
         this.size = p.getSize();
         this.comparisonTicker= p.getMainComparison();
         this.evaluation = String.format("%1$,.2f", p.getEvaluation());
