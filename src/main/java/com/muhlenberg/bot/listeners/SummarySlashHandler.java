@@ -33,7 +33,7 @@ public class SummarySlashHandler {
   public SummarySlashHandler(MessageService messageService) throws IOException {
     this.messageService = messageService;
     //Initialize handlebars service
-    TemplateLoader loader = new ClassPathTemplateLoader("/templates", ".hbs");
+    TemplateLoader loader = new ClassPathTemplateLoader("/templates/portfolio", ".hbs");
     //Load correct template
     this.handlebars = new Handlebars(loader);
     //Register 
