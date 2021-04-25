@@ -76,5 +76,14 @@ public class HelperSource {
         return new Handlebars.SafeString(String.format(progressBar, percentage));
     };
 
+
+    public double round(double decimal, double value) {
+        String times = "1";
+        for (int i = 0; i < decimal; i++) {
+            times = times + "0";        
+        }
+        return Math.round(value * Double.parseDouble(times)) / Double.parseDouble(times);
+    };
+
     // Other helper methods
 }
