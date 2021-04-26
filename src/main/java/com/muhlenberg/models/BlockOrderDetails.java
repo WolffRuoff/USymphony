@@ -33,8 +33,10 @@ public class BlockOrderDetails {
             }
             liquidAmount = port.getPortionLiquid() * port.getSize();
             liquidPercent = (liquidAmount / orderAmount) * 100.0;
-            portList.add(new BlockPortfolio(port, liquidPercent));
-
+            if(liquidPercent > 100.0) {
+                liquidPercent = 100.00;
+            }
+            this.portList.add(new BlockPortfolio(port, liquidPercent));
             this.totalPurchasePower += liquidAmount;
         }
         this.ticker = ticker;
