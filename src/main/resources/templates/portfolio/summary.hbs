@@ -25,6 +25,8 @@
             <td>Price:</td>
                             
             <td>Daily Change:</td>
+
+            <td> Overall Change: </td>
                         
         </tr>
                 
@@ -37,13 +39,14 @@
             <tr>            
                 <td><cash tag="{{symbol}}"/></td>
                 <td> {{companyName}} </td>
-                <td> ${{latestPrice}} </td>
-                <td> {{#if (isPos change)}} <emoji shortcode = "chart_with_upwards_trend"/>  <span style="color:green;"> {{change}}% </span> </td>
-                        {{else}}  {{#if (isNeg change)}}  <emoji shortcode = "chart_with_downwards_trend"/>  <span style="color:red;"> {{change}}% </span> </td>
+                <td> ${{round 2 latestPrice}} </td>
+                <td> {{#if (isPos change)}} <emoji shortcode = "chart_with_upwards_trend"/>  <span style="color:green;"> {{round 3 change}}% </span> </td>
+                        {{else}}  {{#if (isNeg change)}}  <emoji shortcode = "chart_with_downwards_trend"/>  <span style="color:red;"> {{round 3 change}}% </span> </td>
                             {{else}} 
                                 No Change </td>
                             {{/if}}
-                        {{/if}}   
+                        {{/if}} 
+                <td> {{getChange 3 latestPrice purchasePrice }} </td>  
             </tr>    
 
             {{/each}}
@@ -65,6 +68,8 @@
             <td>Price:</td>
                             
             <td>Daily Change:</td>
+
+            <td> Overall Change: </td>
                         
         </tr>
                 
@@ -77,14 +82,17 @@
             <tr>            
                 <td><cash tag="{{symbol}}"/></td>
                 <td> {{companyName}} </td>
-                <td> ${{latestPrice}} </td>
-                <td> {{#if (isPos change)}} <emoji shortcode = "chart_with_upwards_trend"/>  <span style="color:green;"> {{change}}% </span> </td>
-                        {{else}}  {{#if (isNeg change)}}  <emoji shortcode = "chart_with_downwards_trend"/>  <span style="color:red;"> {{change}}% </span> </td>
+                <td> ${{round 2 latestPrice}} </td>
+                <td> {{#if (isPos change)}} <emoji shortcode = "chart_with_upwards_trend"/>  <span style="color:green;"> +{{round 3 change}}% </span> </td>
+                        {{else}}  {{#if (isNeg change)}}  <emoji shortcode = "chart_with_downwards_trend"/>  <span style="color:red;"> {{round 3 change}}% </span> </td>
                             {{else}} 
                                 No Change </td>
                             {{/if}}
                         {{/if}}   
-            </tr>    
+
+                        
+                <td> {{getChange 3 latestPrice purchasePrice}} </td>
+            </tr>     
             
             {{/each}}
 

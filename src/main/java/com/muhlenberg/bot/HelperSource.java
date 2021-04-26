@@ -1,9 +1,10 @@
 package com.muhlenberg.bot;
 
 import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Handlebars.SafeString;
 
+
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class HelperSource {
@@ -77,15 +78,40 @@ public class HelperSource {
     };
 
 
-    public SafeString round(double decimal, double value) {
+    public SafeString round(int decimal, double value) {
         String times = "1";
         for (int i = 0; i < decimal; i++) {
             times = times + "0";        
         }
 
+        DecimalFormat df = new DecimalFormat("#."+('0'*decimal));
         double val =  Math.round(value * Double.parseDouble(times)) / Double.parseDouble(times);
 
-        return new Handlebars.SafeString(String.format("%1$,."+decimal+"f",val));
+        return new Handlebars.SafeString(df.format(val));
+    };
+
+
+    public SafeString getChange(int decimal, double current, double purchase) {
+        String outputString;
+        String times = "1";
+        for (int i = 0; i < decimal; i++) {
+            times = times + "0";        
+        }
+
+        DecimalFormat df = new DecimalFormat("#."+('0'*decimal));
+        double val = (current - purchase) / purchase;
+
+        if (val > 0) {
+            outputString = "<emoji shortcode = \"chart_with_upwards_trend\"/>  <span style=\"color:green;\"> +"+df.format(val) +"% </span>";
+        }
+        else if (val < 0) {
+            outputString = "<emoji shortcode = \"chart_with_downwards_trend\"/>  <span style=\"color:red;\">"+df.format(val) + "% </span>";
+        }
+        else {
+            outputString = "No Change";
+        }
+
+        return new Handlebars.SafeString(outputString);
     };
 
     // Other helper methods
