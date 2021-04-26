@@ -52,7 +52,7 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
 
     final String name = context.getFormValue("name");
     String ticker = context.getFormValue("ticker");
-    if (ticker.equals("")) {
+    if (ticker.isEmpty()) {
       ticker = "^GSPC";
     }
 

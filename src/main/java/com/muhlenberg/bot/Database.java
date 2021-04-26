@@ -118,7 +118,6 @@ public class Database {
             pstmt.setLong(2, userID.getUserId());
             pstmt.setBytes(3, makeByte(port));
             pstmt.executeUpdate();
-            System.out.println("Yay");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
