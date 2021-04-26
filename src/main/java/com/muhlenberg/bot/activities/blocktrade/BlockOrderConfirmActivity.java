@@ -56,7 +56,7 @@ public class BlockOrderConfirmActivity extends FormReplyActivity<FormReplyContex
                     portName = portNode.getKey().substring(1);
                     purchaseAmount = Double.parseDouble(context.getFormValue("8" + portName));
                     if (purchaseAmount > 0.0) {
-                        p = Database.getPortfolio(user, portName);
+                        p = Database.getPortfolio(user, portName, false);
                         thisShares = purchaseAmount / price;
                         Database.placeOrder(user, p, ticker, thisShares, price, purchaseAmount);
 

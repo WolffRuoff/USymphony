@@ -99,7 +99,7 @@ public class BlockAllocateActivity extends FormReplyActivity<FormReplyContext> {
                         }
                     }
                     // Retrieve Portfolio
-                    Portfolio p = Database.getPortfolio(user, portName);
+                    Portfolio p = Database.getPortfolio(user, portName, false);
 
                     blockList.add(new BlockPortfolio(p, toOrder));
                 }

@@ -52,7 +52,7 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
     // Retrieve their choice and the portfolio they chose
     String choice = context.getFormValue("options");
     String portName = context.getFormValue("portfolio");
-    Portfolio p = Database.getPortfolio(user, portName);
+    Portfolio p = Database.getPortfolio(user, portName, false);
 
     if (choice.equals("summary")) {
       try {

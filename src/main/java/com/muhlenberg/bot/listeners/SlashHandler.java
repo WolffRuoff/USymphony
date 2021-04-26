@@ -48,7 +48,7 @@ public class SlashHandler {
     V4User user = context.getInitiator().getUser();
     String commandParts[] = context.getTextContent().trim().split(" ");
 
-    if (commandParts.length == 5) {
+    if (commandParts.length == 2) {
       // Gather list of portfolios belonging to the user and place in an object
       ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
       SelectPortfolio portL = new SelectPortfolio("buy", portfolioList);
@@ -77,7 +77,7 @@ public class SlashHandler {
     V4User user = context.getInitiator().getUser();
     String commandParts[] = context.getTextContent().trim().split(" ");
 
-    if (commandParts.length == 5) {
+    if (commandParts.length == 2) {
       // Gather list of portfolios belonging to the user and place in an object
       ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
       SelectPortfolio portL = new SelectPortfolio("sell", portfolioList);
@@ -120,9 +120,8 @@ public class SlashHandler {
   public void onSlashPortfolio(CommandContext context) {
     V4User user = context.getInitiator().getUser();
     String commandParts[] = context.getTextContent().trim().split(" ");
-
     // If command is just /portfolio display form
-    if (commandParts.length == 5) {
+    if (commandParts.length == 2) {
       // Gather list of portfolios belonging to the user and place in an object
       ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
       SelectPortfolio portL = new SelectPortfolio("view", portfolioList);

@@ -77,7 +77,7 @@ public class HelperSource {
     };
 
 
-    public SafeString round(double decimal, double value) {
+    public SafeString round(int decimal, double value) {
         String times = "1";
         for (int i = 0; i < decimal; i++) {
             times = times + "0";        

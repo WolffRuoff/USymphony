@@ -54,7 +54,7 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
     String sharesOrPrice = context.getFormValue("buyOptions");
     String ticker = context.getFormValue("ticker");
     String portName = context.getFormValue("portfolio");
-    Portfolio p = Database.getPortfolio(user, portName);
+    Portfolio p = Database.getPortfolio(user, portName, false);
 
     // Retrieve the ticker price
     Double price = 1.00;

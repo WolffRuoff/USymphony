@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.muhlenberg.models.Portfolio;
 import com.muhlenberg.models.Stock;
@@ -42,7 +43,7 @@ public class Database {
         return conn;
     }
 
-    public static void createNewTable() {
+    public static void createNewPortTable() {
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS portfoliolist (\n" + "	userid integer NOT NULL,\n"
                 + "	portfolio blob NOT NULL);";
@@ -55,18 +56,32 @@ public class Database {
         }
     }
 
+    public static void createNewClientPortTable() {
+        // SQL statement for creating a new table
+        String sql = "CREATE TABLE IF NOT EXISTS clientportfoliolist (\n" + " userid integer NOT NULL,\n"
+                + "	portid integer NOT NULL);";
+
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            // create a new table
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static void addPortfolio(V4User userID, Portfolio port) {
         // Create table (won't do anything if it already exists)
-        createNewTable();
+        createNewPortTable();
+        createNewClientPortTable();
 
         // Make sure portfolio doesn't have existing name
-        Portfolio portfol = getPortfolio(userID, port.getName());
+        Portfolio portfol = getPortfolio(userID, port.getName(), false);
         int i = 0;
 
         // If portfolio of same name exists, append i to the name of the new one
         while (portfol != null) {
             i++;
-            portfol = getPortfolio(userID, port.getName() + i);
+            portfol = getPortfolio(userID, port.getName() + i, false);
         }
         if (i > 0) {
             port.setName(port.getName() + i);
@@ -79,6 +94,16 @@ public class Database {
             pstmt.setLong(1, userID.getUserId());
             pstmt.setBytes(2, makeByte(port));
             pstmt.executeUpdate();
+
+            sql = "INSERT INTO clientportfoliolist (userid, portid) VALUES(?,?)";
+            PreparedStatement pstmt2 = conn.prepareStatement(sql);
+            Integer rowid = getPortfolioID(userID, port.getName());
+            // Add clients to clientportfoliolist
+            for (Map.Entry<Long, Double> entry : port.getClientBreakdown().entrySet()) {
+                pstmt2.setLong(1, entry.getKey());
+                pstmt2.setInt(2, rowid);
+                pstmt2.executeUpdate();
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -88,7 +113,7 @@ public class Database {
             Double orderAmount) {
 
         // Make sure portfolio doesn't have existing name
-        Portfolio port = getPortfolio(userID, newPort.getName());
+        Portfolio port = getPortfolio(userID, newPort.getName(), false);
 
         yahoofinance.Stock stock;
         try {
@@ -144,8 +169,51 @@ public class Database {
         return null;
     }
 
-    public static Portfolio getPortfolio(V4User user, String name) {
-        ArrayList<Portfolio> ports = getPortfolioList(user);
+    public static ArrayList<Portfolio> getClientPortfolioList(V4User user) {
+        String sql = "SELECT portid FROM clientportfoliolist WHERE userid = ?";
+
+        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, user.getUserId());
+            ResultSet rs = pstmt.executeQuery();
+
+            // Convert ResultSet to an ArrayList
+            ArrayList<Integer> portIdList = new ArrayList<Integer>();
+            while (rs.next()) {
+                // System.out.println(readBytes(rs.getBytes("portfolio")).getName());
+                portIdList.add(rs.getInt("portid"));
+            }
+            // Make sure list isn't empty
+            if (portIdList.size() == 0) {
+                return null;
+            }
+
+            // Retrieve portfolios with rowids
+            ArrayList<Portfolio> portList = new ArrayList<Portfolio>();
+            for (int rowids : portIdList) {
+                sql = "SELECT portfolio FROM portfoliolist WHERE rowid = ?";
+                PreparedStatement pstmt2 = conn.prepareStatement(sql);
+                pstmt2.setInt(1, rowids);
+                rs = pstmt2.executeQuery();
+                while (rs.next()) {
+                    portList.add(readBytes(rs.getBytes("portfolio")));
+                }
+            }
+            return portList;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public static Portfolio getPortfolio(V4User user, String name, boolean isClient) {
+        ArrayList<Portfolio> ports;
+        if(isClient){
+            ports = getClientPortfolioList(user);
+        }
+        else{
+            ports = getPortfolioList(user);
+        }
         int size = ports.size();
 
         for (int i = 0; i < size; i++) {
@@ -154,6 +222,27 @@ public class Database {
             }
         }
         return null;
+    }
+
+    // Retrieves the rowid of a portfolio
+    public static int getPortfolioID(V4User user, String name) {
+        String sql = "SELECT rowid, portfolio FROM portfoliolist WHERE userid = ?";
+
+        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, user.getUserId());
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                // System.out.println(readBytes(rs.getBytes("portfolio")).getName());
+                if (readBytes(rs.getBytes("portfolio")).getName().equals(name)) {
+                    return rs.getInt("rowid");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return -1;
     }
 
     // Serializes portfolio to bytes
@@ -191,24 +280,25 @@ public class Database {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Stock s = new Stock("AAPL", "Apple", 125.02, 125.02, 0.0, true);
-        Stock s2 = new Stock("XOM", "Exxon Mobil", 15.21, 15.21, -.15, true);
-        Stock s3 = new Stock("TMUS", "T-Mobile", 156, 156, 1.15, true);
-        HashMap<Long, Double> h = new HashMap<Long, Double>();
+        /*
+         * Stock s = new Stock("AAPL", "Apple", 125.02, 125.02, 0.0, true); Stock s2 =
+         * new Stock("XOM", "Exxon Mobil", 15.21, 15.21, -.15, true); Stock s3 = new
+         * Stock("TMUS", "T-Mobile", 156, 156, 1.15, true); HashMap<Long, Double> h =
+         * new HashMap<Long, Double>(); V4User user = new V4User(); Long uId =
+         * Long.valueOf(349026222357189L); user.setUserId(uId); h.put(user.getUserId(),
+         * .215);
+         * 
+         * HashMap<Stock, Double> h2 = new HashMap<Stock, Double>(); h2.put(s, 120.00);
+         * h2.put(s2, 127d); h2.put(s3, 17d);
+         * 
+         * Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2, "^GSPC");
+         * Database.createNewPortTable(); Database.addPortfolio(user, p);
+         * ArrayList<Portfolio> portlist = Database.getPortfolioList(user);
+         * System.out.println(portlist.get(0).getName());
+         */
         V4User user = new V4User();
         Long uId = Long.valueOf(349026222357189L);
         user.setUserId(uId);
-        h.put(user.getUserId(), .215);
-
-        HashMap<Stock, Double> h2 = new HashMap<Stock, Double>();
-        h2.put(s, 120.00);
-        h2.put(s2, 127d);
-        h2.put(s3, 17d);
-
-        Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2, "^GSPC");
-        Database.createNewTable();
-        Database.addPortfolio(user, p);
-        ArrayList<Portfolio> portlist = Database.getPortfolioList(user);
-        System.out.println(portlist.get(0).getName());
+        System.out.println(Database.getClientPortfolioList(user));
     }
 }

@@ -85,7 +85,7 @@ public class selectBlockPortfoliosActivity extends FormReplyActivity<FormReplyCo
                 java.util.Map.Entry<String, JsonNode> portNode = ports.next();
                 // Make sure entry is a portfolio
                 if (portNode.getKey().charAt(0) == '9') {
-                    portList.add(Database.getPortfolio(user, portNode.getValue().asText()));
+                    portList.add(Database.getPortfolio(user, portNode.getValue().asText(), false));
                 }
             }
 

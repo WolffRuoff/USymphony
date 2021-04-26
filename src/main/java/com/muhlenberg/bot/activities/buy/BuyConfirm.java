@@ -37,7 +37,7 @@ public class BuyConfirm extends FormReplyActivity<FormReplyContext> {
     Double price = Double.parseDouble(context.getFormValue("price"));
     Double orderAmount = Double.parseDouble(context.getFormValue("orderAmount"));
     String portName = context.getFormValue("portfolio");
-    Portfolio p = Database.getPortfolio(user, portName);
+    Portfolio p = Database.getPortfolio(user, portName, false);
 
     // Place order
     Database.placeOrder(user, p, ticker, shares, price, orderAmount);
