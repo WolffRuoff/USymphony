@@ -77,12 +77,15 @@ public class HelperSource {
     };
 
 
-    public double round(double decimal, double value) {
+    public SafeString round(double decimal, double value) {
         String times = "1";
         for (int i = 0; i < decimal; i++) {
             times = times + "0";        
         }
-        return Math.round(value * Double.parseDouble(times)) / Double.parseDouble(times);
+
+        double val =  Math.round(value * Double.parseDouble(times)) / Double.parseDouble(times);
+
+        return new Handlebars.SafeString(String.format("%1$,."+decimal+"f",val));
     };
 
     // Other helper methods
