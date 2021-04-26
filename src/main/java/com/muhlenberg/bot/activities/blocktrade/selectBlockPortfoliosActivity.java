@@ -94,7 +94,6 @@ public class selectBlockPortfoliosActivity extends FormReplyActivity<FormReplyCo
             //Make sure portfolios have enough liquid assets for the purchase
             if (orderDets.getTotalPurchasePower() >= orderAmount) {
                 // Convert to context and send order confirmation
-                handlebars.registerHelpers(new HelperSource());
                 template = handlebars.compile("blockAllocation");
                 Context c = ObjectToContext.Convert(orderDets);
                 this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));

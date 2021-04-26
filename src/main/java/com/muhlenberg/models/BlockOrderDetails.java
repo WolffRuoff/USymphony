@@ -11,19 +11,28 @@ public class BlockOrderDetails {
     private Double orderAmount;
     private Double totalPurchasePower;
 
+    public BlockOrderDetails(ArrayList<BlockPortfolio> blockList, String ticker, Double shares, Double price,
+            Double orderAmount, int ignore) {
+        this.portList = blockList;
+        this.ticker = ticker;
+        this.shares = shares;
+        this.price = price;
+        this.totalPurchasePower = null;
+    }
+
     public BlockOrderDetails(ArrayList<Portfolio> ports, String ticker, Double shares, Double price,
             Double orderAmount) {
         Double liquidPercent;
         Double liquidAmount;
         this.totalPurchasePower = 0.0;
-        for(Portfolio port : ports) {
+        for (Portfolio port : ports) {
             try {
                 port.rebalancePortfolio();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             liquidAmount = port.getPortionLiquid() * port.getSize();
-            liquidPercent = (liquidAmount) / orderAmount;
+            liquidPercent = (liquidAmount / orderAmount) * 100.0;
             portList.add(new BlockPortfolio(port, liquidPercent));
 
             this.totalPurchasePower += liquidAmount;

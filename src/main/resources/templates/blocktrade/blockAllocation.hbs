@@ -13,11 +13,11 @@
                 <tr>
                     <td>{{name}}</td>
                     <td>
-                        <text-field name="9{{name}}" placeholder="Type in percent allocated" required="true"
+                        <text-field name="9{{name}}" placeholder="Type in percent allocated"
                             pattern="^[0-9]*(\.[0-9][0-9])?$" pattern-error-message="Please only insert numbers" />
                     </td>
-                    <td>{{round 3 maxPercent}}% <div style="visibility: hidden; font-size: 0vw;">
-                            <radio name="8{{name}}" value="{{maxPercent}}" checked="true"></radio>
+                    <td>{{round 3 percent}}% <div style="visibility: hidden; font-size: 0vw;">
+                            <radio name="8{{name}}" value="{{percent}}" checked="true"></radio>
                         </div>
                     </td>
                 </tr>

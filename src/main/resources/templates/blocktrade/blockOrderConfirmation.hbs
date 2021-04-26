@@ -6,14 +6,11 @@
             <tr>
                 <td>Portfolio Name</td>
                 <td>Price Allocated</td>
-                <td>Percent Allocated</td>
-                <td>Remaining Liquidity After Purchase</td> 
             </tr>
             {{#each portList}}
             <tr>
                 <td>{{name}}</td>
-                <td>${{round 2 priceAllocated}}</td>
-                <td>{{round 3 percentAllocated}}%</td>
+                <td>${{round 3 percent}}</td>
             </tr>
             {{/each}}
         </tbody>
