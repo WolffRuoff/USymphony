@@ -1,28 +1,33 @@
 <messageML>
     <h2>Review Block Trade</h2>
-
-    <table>
-        <tbody>
-            <tr>
-                <td>Portfolio Name</td>
-                <td>Price Allocated</td>
-            </tr>
-            {{#each portList}}
-            <tr>
-                <td>{{name}}</td>
-                <td>${{round 3 percent}}</td>
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
     <form id="blockOrderConfirm">
-        <button name="submit" type="action">Review Order</button>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Portfolio Name</td>
+                    <td>Price Allocated</td>
+                </tr>
+                {{#each portList}}
+                <tr>
+                    <td>
+                        <div style="visibility: hidden; font-size: 0vw;">
+                            <radio name="9{{name}}" value="{{name}}" checked="true"></radio>
+                        </div>{{name}}
+                    </td>
+                    <td>
+                        <div style="visibility: hidden; font-size: 0vw;">
+                            <radio name="8{{name}}" value="{{percent}}" checked="true"></radio>
+                        </div>${{round 3 percent}}
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <button name="submit" type="action">Submit Order</button>
 
         <div style="visibility: hidden; font-size: 0vw;">
             <radio name="ticker" value="{{ticker}}" checked="true"></radio>
             <radio name="price" value="{{price}}" checked="true"></radio>
-            <radio name="shares" value="{{shares}}" checked="true"></radio>
-            <radio name="orderAmount" value="{{orderAmount}}" checked="true"></radio>
         </div>
     </form>
 </messageML>

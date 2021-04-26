@@ -79,7 +79,6 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
       if (liquidAmount >= orderAmount) {
 
         // Convert to object and send order confirmation
-        handlebars.registerHelpers(new HelperSource());
         OrderDetails orderDets = new OrderDetails(p, ticker, shares, price, orderAmount);
         try {
           template = handlebars.compile("orderConfirmation");

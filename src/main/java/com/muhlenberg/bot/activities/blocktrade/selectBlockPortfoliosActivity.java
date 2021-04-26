@@ -136,8 +136,8 @@ public class selectBlockPortfoliosActivity extends FormReplyActivity<FormReplyCo
 
     @Override
     protected ActivityInfo info() {
-        return new ActivityInfo().type(ActivityType.FORM).name("Name of the Portfolio")
-                .description("\"Form handler for the buyActivity form\"");
+        return new ActivityInfo().type(ActivityType.FORM).name("Select Block Portfolios Activity")
+                .description("\"Form handler for the blockTrade form\"");
     }
 
 }

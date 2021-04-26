@@ -41,9 +41,11 @@ public class Portfolio implements java.io.Serializable {
     // Provide method to update stock changes. Should be called every time the
     // change is checked. Needed so that top5 and bottom5 changes will still work.
     public void updateStocks() throws IOException {
-        //Check if portfolio has no assets
-        if(this.assets.size()==0){return;}
-        
+        // Check if portfolio has no assets
+        if (this.assets.size() == 0) {
+            return;
+        }
+
         ArrayList<String> updateVals = new ArrayList<String>();
         for (Stock stock : assets.keySet()) {
             updateVals.add(stock.getSymbol());
@@ -141,11 +143,14 @@ public class Portfolio implements java.io.Serializable {
         for (Entry<Stock, Double> stoc : this.assets.entrySet()) {
             if (stoc.getKey().getSymbol().equals(n.getSymbol())) {
                 this.assets.put(stoc.getKey(), Double.sum(am, this.assets.get(stoc.getKey())));
+                setSize((float) (this.size - (n.getLatestPrice() * am)));
+                this.rebalancePortfolio();
                 return;
             }
         }
         // Create new asset
         this.assets.put(n, am);
+        setSize((float) (this.size - (n.getLatestPrice() * am)));
         this.rebalancePortfolio();
     }
 
@@ -167,8 +172,10 @@ public class Portfolio implements java.io.Serializable {
     public void rebalancePortfolio() throws IOException {
         Double amountLiquid = this.portionLiquid * this.size;
 
-        //Check if portfolio has no assets
-        if(this.assets.size()==0){return;}
+        // Check if portfolio has no assets
+        if (this.assets.size() == 0) {
+            return;
+        }
 
         updateStocks();
         Double newAmount = 0.0;

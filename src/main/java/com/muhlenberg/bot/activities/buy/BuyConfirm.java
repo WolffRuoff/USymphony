@@ -43,7 +43,7 @@ public class BuyConfirm extends FormReplyActivity<FormReplyContext> {
     Database.placeOrder(user, p, ticker, shares, price, orderAmount);
 
     // Send confirmation message
-    final String message = "<messageML>Purchased " + shares + " shares of '" + ticker + "' for $" + price + ".</messageML>";
+    final String message = "<messageML>Purchased " + shares + " shares of '" + ticker + "' for $" + orderAmount + ".</messageML>";
     this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
   }
 
