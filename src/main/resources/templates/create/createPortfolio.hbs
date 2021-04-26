@@ -3,7 +3,8 @@
 
     <form id="create-portfolio">
         <person-selector name="client-selector" placeholder="Type the clients' names" />
-        <text-field name="name" placeholder="Input the portfolio name..." required="true" />
+        <text-field name="name" pattern="^[^\W_]{1,20}$" pattern-error-message="Please only use letters and numbers"
+            placeholder="Input the portfolio name..." required="true" />
         <text-field name="ticker" placeholder="Input benchmark ticker (Optional)" />
         <button name="submit" type="action">Create Portfolio</button>
         <button type="reset">Reset Data</button>
