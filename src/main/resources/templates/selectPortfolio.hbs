@@ -2,7 +2,9 @@
     <h2>Please select a portfolio or create a new one</h2>
     <form id="selectPortfolio">
         <select name="portfolios">
+            {{#if (isNotClient option)}}
             <option value="new-port" selected="true">Create New Portfolio</option>
+            {{else}}{{/if}}
             {{#each portfolioList}}
             <option value="{{ name }}">{{ name }}</option>
             {{/each}}

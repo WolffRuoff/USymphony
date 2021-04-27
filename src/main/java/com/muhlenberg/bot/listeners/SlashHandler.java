@@ -1,6 +1,7 @@
 package com.muhlenberg.bot.listeners;
 
 import com.muhlenberg.bot.Database;
+import com.muhlenberg.bot.HelperSource;
 import com.muhlenberg.bot.ObjectToContext;
 import com.muhlenberg.models.*;
 
@@ -55,6 +56,7 @@ public class SlashHandler {
 
       // Try to display selectPortfolio message
       try {
+        handlebars.registerHelpers(new HelperSource());
         this.template = handlebars.compile("selectPortfolio");
         Context c = ObjectToContext.Convert(portL);
         this.messageService.send(context.getStreamId(), template.apply(c));
@@ -84,6 +86,7 @@ public class SlashHandler {
 
       // Try to display selectPortfolio message
       try {
+        handlebars.registerHelpers(new HelperSource());
         this.template = handlebars.compile("selectPortfolio");
         Context c = ObjectToContext.Convert(portL);
         this.messageService.send(context.getStreamId(), template.apply(c));
@@ -128,6 +131,37 @@ public class SlashHandler {
 
       // Try to display selectPortfolio message
       try {
+        handlebars.registerHelpers(new HelperSource());
+        this.template = handlebars.compile("selectPortfolio");
+        Context c = ObjectToContext.Convert(portL);
+        this.messageService.send(context.getStreamId(), template.apply(c));
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      } catch (IOException e1) {
+        e1.printStackTrace();
+      }
+    }
+    // Otherwise analyze parameters
+    else {
+
+    }
+
+  }
+
+  // Command for a client to view a portfolio summary
+  @Slash(value = "/view", mentionBot = true)
+  public void onSlashView(CommandContext context) {
+    V4User user = context.getInitiator().getUser();
+    String commandParts[] = context.getTextContent().trim().split(" ");
+    // If command is just /portfolio display form
+    if (commandParts.length == 2) {
+      // Gather list of portfolios belonging to the user and place in an object
+      ArrayList<Portfolio> portfolioList = Database.getClientPortfolioList(user);
+      SelectPortfolio portL = new SelectPortfolio("client", portfolioList);
+
+      // Try to display selectPortfolio message
+      try {
+        handlebars.registerHelpers(new HelperSource());
         this.template = handlebars.compile("selectPortfolio");
         Context c = ObjectToContext.Convert(portL);
         this.messageService.send(context.getStreamId(), template.apply(c));

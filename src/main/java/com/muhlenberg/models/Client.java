@@ -3,10 +3,17 @@ package com.muhlenberg.models;
 public class Client {
     private Long userID;
     private Double amountInvested;
+    private String portName;
     
     public Client(Long userID, Double amountInvested) {
         this.userID = userID;
         this.amountInvested = amountInvested;
+        this.portName = "";
+    }
+    public Client(Long userID, Double amountInvested, String portName) {
+        this.userID = userID;
+        this.amountInvested = amountInvested;
+        this.portName = portName;
     }
     
     public Long getUserID() {
@@ -25,6 +32,12 @@ public class Client {
         this.amountInvested = amountInvested;
     }
 
-    //private Map<Long, Integer> portfolioAmounts;
+    public String getPortName() {
+        return this.portName;
+    }
+
+    public void setPortName(String portName) {
+        this.portName = portName;
+    }
 
 }
