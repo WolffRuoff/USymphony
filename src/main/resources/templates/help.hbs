@@ -2,44 +2,43 @@
     <h2>Hello
         <mention email="{{this}}" />. Here are some of the commands that you will be using:
     </h2>
-    <p>Click on the command to view more info about it</p>
-    <ul style="list-style-type: none;">
-        <li>
-            <card accent="tempo-bg-color--blue">
-                <header>/create</header>
+    <h3>Click on the command to view more info about it</h3>
+    <br />
+    <h3>Commands for Clients</h3>
+    <card accent="tempo-bg-color--blue">
+        <header>@BergBot /view</header>
 
-                <body>
-                    Create a new portfolio.
-                </body>
-            </card>
-        </li>
-        <li>
-            <card accent="tempo-bg-color--blue">
-                <header>/buy</header>
+        <body>
+            View a summary of any portfolio that you own a portion of
+        </body>
+    </card>
+    <h3>Commands for Portfolio Managers</h3>
+    <card accent="tempo-bg-color--blue">
+        <header>@BergBot /create</header>
 
-                <body>
-                    Buy an asset for one of your portfolios.
-                </body>
-            </card>
-        </li>
-        <li>
-            <card accent="tempo-bg-color--blue">
-                <header>/portfolio</header>
+        <body>
+            Create a new portfolio.
+        </body>
+    </card>
+    <card accent="tempo-bg-color--blue">
+        <header>@BergBot /portfolio</header>
 
-                <body>
-                    Use this command to either view a summary of your portfolio or a client breakdown
-                </body>
-            </card>
-        </li>
-        <li>
-            <card accent="tempo-bg-color--blue">
-                <header>/something</header>
+        <body>
+            Use this command to either view a summary of your portfolio or a client breakdown
+        </body>
+    </card>
+    <card accent="tempo-bg-color--blue">
+        <header>@BergBot /buy</header>
 
-                <body>
-                    Card Body. User must click to view it (when the card is sent collapsed/cropped).
-                    [it may contain a title, a paragraph, other elements for e.g. data bar and action bar]
-                </body>
-            </card>
-        </li>
-    </ul>
+        <body>
+            Buy an asset for one of your portfolios.
+        </body>
+    </card>
+    <card accent="tempo-bg-color--blue">
+        <header>@BergBot /blocktrade</header>
+
+        <body>
+            Buy a large quantity of an asset and distribute it over multiple portfolios.
+        </body>
+    </card>
 </messageML>
