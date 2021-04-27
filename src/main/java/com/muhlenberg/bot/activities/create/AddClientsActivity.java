@@ -26,6 +26,8 @@ import com.symphony.bdk.core.activity.model.ActivityInfo;
 import com.symphony.bdk.core.activity.model.ActivityType;
 import com.symphony.bdk.core.service.message.MessageService;
 import com.symphony.bdk.core.service.message.model.Message;
+import com.symphony.bdk.core.service.stream.StreamService;
+import com.symphony.bdk.gen.api.model.Stream;
 import com.symphony.bdk.gen.api.model.V4Message;
 import com.symphony.bdk.gen.api.model.V4Stream;
 import com.symphony.bdk.gen.api.model.V4User;
@@ -36,9 +38,12 @@ import org.springframework.stereotype.Component;
 public class AddClientsActivity extends FormReplyActivity<FormReplyContext> {
 
     private final MessageService messageService;
+    private final StreamService streamService;
 
-    public AddClientsActivity(MessageService messageService) {
+    public AddClientsActivity(MessageService messageService, StreamService streamService) {
         this.messageService = messageService;
+        this.streamService = streamService;
+        
     }
 
     @Override
@@ -98,12 +103,8 @@ public class AddClientsActivity extends FormReplyActivity<FormReplyContext> {
                     Context c = ObjectToContext.Convert(client);
                     
                     //Create new stream
-                    V4Stream stream = new V4Stream();
-                    stream.roomName("Welcome to BergBot!");
-                    V4User user = new V4User();
-                    user.setUserId(entry.getKey());
-                    stream.addMembersItem(user);
-                    this.messageService.send(stream, template.apply(c));
+                    Stream stream = this.streamService.create(entry.getKey());
+                    this.messageService.send(stream.getId(), template.apply(c));
                     
                 }
             } catch (IOException e) {
