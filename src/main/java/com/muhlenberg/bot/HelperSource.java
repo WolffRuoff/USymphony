@@ -22,6 +22,12 @@ public class HelperSource {
         }
         else { return false;}
     }
+    public boolean isNotClient(String option) {
+        if (!option.equals("client")) {
+            return true;
+        }
+        return false;
+    }
 
     public SafeString pieChart(double value) {
         String fillStyle = "";
