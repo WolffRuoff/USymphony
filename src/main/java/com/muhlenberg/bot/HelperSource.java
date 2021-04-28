@@ -3,9 +3,10 @@ package com.muhlenberg.bot;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Handlebars.SafeString;
 
-
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class HelperSource {
     private static final List<String> colours = List.of("#3d85c6", "#e69138", "#a64d79", "#6aa84f");
@@ -85,15 +86,14 @@ public class HelperSource {
 
 
     public SafeString round(int decimal, double value) {
-        String times = "1";
+        /* String times = "1";
         for (int i = 0; i < decimal; i++) {
             times = times + "0";        
-        }
-
-        DecimalFormat df = new DecimalFormat("#."+('0'*decimal));
-        double val =  Math.round(value * Double.parseDouble(times)) / Double.parseDouble(times);
-
-        return new Handlebars.SafeString(df.format(val));
+        } */
+        NumberFormat rounder = NumberFormat.getNumberInstance(Locale.US);
+        rounder.setMinimumFractionDigits(decimal);
+        rounder.setMaximumFractionDigits(decimal);
+        return new Handlebars.SafeString(rounder.format(value));
     };
 
 

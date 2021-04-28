@@ -1,10 +1,8 @@
 package com.muhlenberg.bot.activities.create;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,9 +26,6 @@ import com.symphony.bdk.core.service.message.MessageService;
 import com.symphony.bdk.core.service.message.model.Message;
 import com.symphony.bdk.core.service.stream.StreamService;
 import com.symphony.bdk.gen.api.model.Stream;
-import com.symphony.bdk.gen.api.model.V4Message;
-import com.symphony.bdk.gen.api.model.V4Stream;
-import com.symphony.bdk.gen.api.model.V4User;
 
 import org.springframework.stereotype.Component;
 
