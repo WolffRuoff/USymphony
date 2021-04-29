@@ -107,13 +107,10 @@ public class BlockAllocateActivity extends FormReplyActivity<FormReplyContext> {
 
             // If emptyCount > 0 add remaining allocation evenly to them
             if (emptyCount > 0 && !orderedTooMuch && percentOrdered <= 100.0) {
-                System.out.println(percentOrdered);
                 Double alAmount = (((100.0 - percentOrdered) / 100.0) * orderAmount) / emptyCount;
 
                 for (BlockPortfolio block : blockList) {
                     if (block.getPercent() < 0.0) {
-                        System.out.println("woohoo");
-                        System.out.println(alAmount);
                         maxP = (Double.parseDouble(context.getFormValue("8" + block.getName())) / 100.0) * orderAmount;
                         // check if amount is more that maxP (invalid)
                         if (maxP < alAmount) {

@@ -12,16 +12,12 @@ import com.symphony.bdk.gen.api.model.V4User;
 import com.symphony.bdk.spring.annotation.Slash;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import org.springframework.core.convert.ConversionException;
 import org.springframework.stereotype.Component;
 
-import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.print.event.PrintJobListener;
 
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.Handlebars;
@@ -50,15 +46,14 @@ public class SlashHandler {
   @Slash(value = "/help", mentionBot = true)
   public void onSlashHelp(CommandContext context) throws IOException {
     final String userEmail = context.getInitiator().getUser().getEmail();
-    this.messageService.send(context.getStreamId(), this.template.apply(userEmail));
+    this.messageService.send(context.getStreamId(), template.apply(userEmail));
   }
 
   // Command to buy a new asset for the portfolio
   @Slash(value = "/buy", mentionBot = true)
   public void onSlashBuy(CommandContext context) throws IOException {
     V4User user = context.getInitiator().getUser();
-    String commandParts[] = context.getTextContent().trim().split(" ");
-
+    String[] commandParts = context.getTextContent().trim().split("\\s+");
     if (commandParts.length == 2) {
       // Gather list of portfolios belonging to the user and place in an object
       ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
@@ -78,79 +73,77 @@ public class SlashHandler {
     }
     // Otherwise analyze parameters
     else {
-      //check what they sent
-      //commands parts 1 bergbot
-      //               2 command 
-      //               3 portfolio name
-      //               4 ticker
-      //               5 shares or amount
-      //               6 quanitity
-      if( commandParts[5].equalsIgnoreCase("a") || commandParts[5].equalsIgnoreCase("s")){
-        String ShareorAmount = commandParts[5];//saves s or a option
-        String ticker=commandParts[4];//saves ticker
+      // check what they sent
+      // commands parts 0 bergbot
+      // 1 command
+      // 2 portfolio name
+      // 3 ticker
+      // 4 shares or amount
+      // 5 quanitity
+      if (commandParts[4].equalsIgnoreCase("a") || commandParts[4].equalsIgnoreCase("s")) {
+        String ShareorAmount = commandParts[4];// saves s or a option
+        String ticker = commandParts[3];// saves ticker
         Double amount = 0.0;
         Double price = 0.00;
         Double shares = 0.00;
-        String portName=commandParts[3];
-        
-        //Check if ticker is valid
-        try{
+        String portName = commandParts[2];
+
+        // Check if ticker is valid
+        try {
           price = YahooFinance.get(ticker).getQuote().getPrice().doubleValue();
-  
-        }catch (IOException e) {//invalid ticker name
-          final String message = "<messageML><div style=\"color:red;\">'" + "' This is not a valid ticker. /buy portolio, a or s, double"
-          + ". Please try again.</div></messageML>";
-          this.messageService.send(context.getStreamId(), Message.builder().content(message).build());        
+
+        } catch (IOException e) {// invalid ticker name
+          final String message = "<messageML><div style=\"color:red;\">'"
+              + "' This is not a valid ticker. /buy portolio, a or s, double" + ". Please try again.</div></messageML>";
+          this.messageService.send(context.getStreamId(), Message.builder().content(message).build());
           return;
         }
 
-        //Check if portName is invalid
+        // Check if portName is invalid
         Portfolio p = Database.getPortfolio(user, portName, false);
-        if( p == null){
+        if (p == null) {
           final String message = "<messageML><div style=\"color:red;\"> This is not a valid portfolio"
-          + ". Please try again.</div></messageML>";
-          this.messageService.send(context.getStreamId(), Message.builder().content(message).build());        
+              + ". Please try again.</div></messageML>";
+          this.messageService.send(context.getStreamId(), Message.builder().content(message).build());
           return;
         }
-        //Check sharesoramount and quantity
-        try{
-          if(ShareorAmount.equalsIgnoreCase("a")){
-            amount=Double.parseDouble(commandParts[5]);
-            shares = amount/price; // calc the number of shares you own
-          }else{
-            shares = Double.parseDouble(commandParts[5]);
+        // Check sharesoramount and quantity
+        try {
+          if (ShareorAmount.equalsIgnoreCase("a")) {
+            amount = Double.parseDouble(commandParts[4]);
+            shares = amount / price; // calc the number of shares you own
+          } else {
+            shares = Double.parseDouble(commandParts[4]);
             amount = shares * price;
           }
-        }catch (NumberFormatException | NullPointerException e) {//invalid number 
+        } catch (NumberFormatException | NullPointerException e) {// invalid number
           final String message = "<messageML><div style=\"color:red;\"> The amount is invalid. @BerbBot /buy <portolio name> <ticker> <amount or shares (a or s)> <quantity>, a or s, double"
-          + ". Please try again.</div></messageML>";
-          this.messageService.send(context.getStreamId(), Message.builder().content(message).build());        
+              + ". Please try again.</div></messageML>";
+          this.messageService.send(context.getStreamId(), Message.builder().content(message).build());
           return;
         }
-        //check if portfolio has enough liquid assets to buy shares
-        Double liquidAmount =  p.getSize() * p.getPortionLiquid();
+        // check if portfolio has enough liquid assets to buy shares
+        Double liquidAmount = p.getSize() * p.getPortionLiquid();
         if (liquidAmount >= amount) {
           // Convert to object and send order confirmation
           OrderDetails orderDets = new OrderDetails(p, ticker, shares, price, amount);
           try {
             template = handlebars.compile("orderConfirmation");
             Context c = ObjectToContext.Convert(orderDets);
-            this.messageService.send(context.getStreamId(),template.apply(c));
+            this.messageService.send(context.getStreamId(), template.apply(c));
           } catch (IOException e) {
             e.printStackTrace();
           }
         }
-        
-      }else{//invalid selection of amount or share
-        final String message = "<messageML><div style=\"color:red;\">'" + "' This is not a valid option please select shares or amount. /buy portolio, a or s, double"
-        + ". Please try again.</div></messageML>";
-        this.messageService.send(context.getStreamId(), Message.builder().content(message).build());        
+
+      } else {// invalid selection of amount or share
+        final String message = "<messageML><div style=\"color:red;\">'"
+            + "' This is not a valid option please select shares or amount. /buy portolio, a or s, double"
+            + ". Please try again.</div></messageML>";
+        this.messageService.send(context.getStreamId(), Message.builder().content(message).build());
         return;
       }
-      
-      
     }
-
   }
 
   // Command to sell an asset for the portfolio

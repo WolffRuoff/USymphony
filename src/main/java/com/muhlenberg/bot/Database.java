@@ -111,7 +111,6 @@ public class Database {
     public static void placeOrder(V4User userID, Portfolio newPort, String ticker, Double shares, Double price,
             Double orderAmount) {
 
-        // Make sure portfolio doesn't have existing name
         Portfolio port = getPortfolio(userID, newPort.getName(), false);
 
         yahoofinance.Stock stock;
@@ -134,13 +133,12 @@ public class Database {
             e1.printStackTrace();
         }
 
-        // SQL statement for adding a portfolio
-        String sql = "UPDATE portfoliolist SET portfolio = ? WHERE userid = ? AND portfolio = ?";
+        int rowid = Database.getPortfolioID(userID, port.getName());
+        String sql = "UPDATE portfoliolist SET portfolio = ? WHERE rowid = ?";
 
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setBytes(1, makeByte(newPort));
-            pstmt.setLong(2, userID.getUserId());
-            pstmt.setBytes(3, makeByte(port));
+            pstmt.setInt(2, rowid);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -158,7 +156,9 @@ public class Database {
             // Convert ResultSet to an ArrayList
             ArrayList<Portfolio> portList = new ArrayList<Portfolio>();
             while (rs.next()) {
-                // System.out.println(readBytes(rs.getBytes("portfolio")).getName());
+                //For debugging
+                //System.out.println(readBytes(rs.getBytes("portfolio")).getName() + ": " + rs.getBytes("portfolio").length);
+                //System.out.println(readBytes(rs.getBytes("portfolio")).getName() + ": " + readBytes(rs.getBytes("portfolio")).getAssets().length);
                 portList.add(readBytes(rs.getBytes("portfolio")));
             }
             return portList;
@@ -179,7 +179,6 @@ public class Database {
             // Convert ResultSet to an ArrayList
             ArrayList<Integer> portIdList = new ArrayList<Integer>();
             while (rs.next()) {
-                // System.out.println(readBytes(rs.getBytes("portfolio")).getName());
                 portIdList.add(rs.getInt("portid"));
             }
             // Make sure list isn't empty
@@ -233,7 +232,6 @@ public class Database {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                // System.out.println(readBytes(rs.getBytes("portfolio")).getName());
                 if (readBytes(rs.getBytes("portfolio")).getName().equals(name)) {
                     return rs.getInt("rowid");
                 }
@@ -252,7 +250,7 @@ public class Database {
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(port);
             byte[] portfolioAsBytes = baos.toByteArray();
-            // ByteArrayInputStream bais = new ByteArrayInputStream(portfolioAsBytes);
+            //ByteArrayInputStream bais = new ByteArrayInputStream(portfolioAsBytes);
             return portfolioAsBytes;
         } catch (IOException e) {
             e.printStackTrace();
@@ -273,31 +271,5 @@ public class Database {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        /*
-         * Stock s = new Stock("AAPL", "Apple", 125.02, 125.02, 0.0, true); Stock s2 =
-         * new Stock("XOM", "Exxon Mobil", 15.21, 15.21, -.15, true); Stock s3 = new
-         * Stock("TMUS", "T-Mobile", 156, 156, 1.15, true); HashMap<Long, Double> h =
-         * new HashMap<Long, Double>(); V4User user = new V4User(); Long uId =
-         * Long.valueOf(349026222357189L); user.setUserId(uId); h.put(user.getUserId(),
-         * .215);
-         * 
-         * HashMap<Stock, Double> h2 = new HashMap<Stock, Double>(); h2.put(s, 120.00);
-         * h2.put(s2, 127d); h2.put(s3, 17d);
-         * 
-         * Portfolio p = new Portfolio("PortTester", 1000, 1.00, h, h2, "^GSPC");
-         * Database.createNewPortTable(); Database.addPortfolio(user, p);
-         * ArrayList<Portfolio> portlist = Database.getPortfolioList(user);
-         * System.out.println(portlist.get(0).getName());
-         */
-        V4User user = new V4User();
-        Long uId = Long.valueOf(349026222357189L);
-        user.setUserId(uId);
-        System.out.println(Database.getClientPortfolioList(user));
     }
 }

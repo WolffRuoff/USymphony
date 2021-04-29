@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.muhlenberg.bot.Database;
+import com.muhlenberg.bot.HelperSource;
 import com.muhlenberg.models.Portfolio;
 import com.symphony.bdk.core.activity.ActivityMatcher;
 import com.symphony.bdk.core.activity.form.FormReplyActivity;
@@ -48,6 +49,7 @@ public class BlockOrderConfirmActivity extends FormReplyActivity<FormReplyContex
             Portfolio p;
             Double purchaseAmount;
             Double thisShares;
+            HelperSource help  = new HelperSource();
             while (ports.hasNext()) {
                 java.util.Map.Entry<String, JsonNode> portNode = ports.next();
                 // Make sure entry is a portfolio
@@ -61,8 +63,8 @@ public class BlockOrderConfirmActivity extends FormReplyActivity<FormReplyContex
                         Database.placeOrder(user, p, ticker, thisShares, price, purchaseAmount);
 
                         // Send confirmation message
-                        final String message = "<messageML><b>" + portName + "</b>: Purchased " + thisShares
-                                + " shares of '" + ticker + "' for $" + purchaseAmount + ".</messageML>";
+                        final String message = "<messageML><b>" + portName + "</b>: Purchased " + help.round(3, thisShares)
+                                + " shares of '" + ticker + "' for $" + help.round(2, purchaseAmount) + ".</messageML>";
                         this.messageService.send(context.getSourceEvent().getStream(),
                                 Message.builder().content(message).build());
                     }

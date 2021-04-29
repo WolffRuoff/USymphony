@@ -1,6 +1,7 @@
 package com.muhlenberg.bot.activities.buy;
 
 import com.muhlenberg.bot.Database;
+import com.muhlenberg.bot.HelperSource;
 import com.muhlenberg.models.Portfolio;
 import com.symphony.bdk.core.activity.ActivityMatcher;
 import com.symphony.bdk.core.activity.form.FormReplyActivity;
@@ -43,7 +44,8 @@ public class BuyConfirm extends FormReplyActivity<FormReplyContext> {
     Database.placeOrder(user, p, ticker, shares, price, orderAmount);
 
     // Send confirmation message
-    final String message = "<messageML>Purchased " + shares + " shares of '" + ticker + "' for $" + orderAmount + ".</messageML>";
+    HelperSource help = new HelperSource();
+    final String message = "<messageML>Purchased " + help.round(3, shares) + " shares of '" + ticker + "' for $" + help.round(2, orderAmount) + ".</messageML>";
     this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
   }
 
