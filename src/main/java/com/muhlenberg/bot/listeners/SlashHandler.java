@@ -45,6 +45,7 @@ public class SlashHandler {
   // Command to view the help list
   @Slash(value = "/help", mentionBot = true)
   public void onSlashHelp(CommandContext context) throws IOException {
+    this.template = handlebars.compile("help");
     final String userEmail = context.getInitiator().getUser().getEmail();
     this.messageService.send(context.getStreamId(), template.apply(userEmail));
   }
