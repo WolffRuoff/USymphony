@@ -19,6 +19,7 @@ import com.symphony.bdk.core.activity.form.FormReplyContext;
 import com.symphony.bdk.core.activity.model.ActivityInfo;
 import com.symphony.bdk.core.activity.model.ActivityType;
 import com.symphony.bdk.core.service.message.MessageService;
+import com.symphony.bdk.core.service.message.model.Message;
 import com.symphony.bdk.gen.api.model.V4User;
 
 import org.springframework.stereotype.Component;
@@ -53,6 +54,13 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
     String choice = context.getFormValue("options");
     String portName = context.getFormValue("portfolio");
     Portfolio p = Database.getPortfolio(user, portName, false);
+    // Make sure user who submitted the form owns the portfolio
+    if (p == null) {
+      final String message = "<messageML><div style=\"color:red;\">'" + portName
+          + "' doesn't exist or you are not authorized.</div></messageML>";
+      this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
+      return;
+    }
 
     if (choice.equals("summary")) {
       try {

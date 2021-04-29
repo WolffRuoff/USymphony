@@ -56,6 +56,13 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
     String portName = context.getFormValue("portfolio");
     Portfolio p = Database.getPortfolio(user, portName, false);
 
+    // Make sure user who submitted the form owns the portfolio
+    if (p == null) {
+      final String message = "<messageML><div style=\"color:red;\">'" + portName
+          + "' doesn't exist or you are not authorized.</div></messageML>";
+      this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
+      return;
+    }
     // Retrieve the ticker price
     Double price = 1.00;
     Double shares = 1.00;
@@ -75,7 +82,7 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
       }
 
       // Make sure portfolio has enough liquid for the purchase
-      Double liquidAmount =  p.getSize() * p.getPortionLiquid();
+      Double liquidAmount = p.getSize() * p.getPortionLiquid();
       if (liquidAmount >= orderAmount) {
 
         // Convert to object and send order confirmation
@@ -90,8 +97,9 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
       }
       // Portfolio doesn't have enough liquid for purchase
       else {
-        final String message = "<messageML><div style=\"color:red;\">'" + p.getName() + "' doesn't have enough liquid assets. It only has $"
-            + (Math.round(liquidAmount * 100.0) / 100.0) + ". Please try again.</div></messageML>";
+        final String message = "<messageML><div style=\"color:red;\">'" + p.getName()
+            + "' doesn't have enough liquid assets. It only has $" + (Math.round(liquidAmount * 100.0) / 100.0)
+            + ". Please try again.</div></messageML>";
         this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
         template = handlebars.compile("buyAsset");
         this.messageService.send(context.getSourceEvent().getStream(), template.apply(p.getName()));

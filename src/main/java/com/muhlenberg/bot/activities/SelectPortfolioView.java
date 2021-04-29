@@ -18,6 +18,7 @@ import com.symphony.bdk.core.activity.form.FormReplyContext;
 import com.symphony.bdk.core.activity.model.ActivityInfo;
 import com.symphony.bdk.core.activity.model.ActivityType;
 import com.symphony.bdk.core.service.message.MessageService;
+import com.symphony.bdk.core.service.message.model.Message;
 import com.symphony.bdk.gen.api.model.V4User;
 
 import org.springframework.stereotype.Component;
@@ -97,6 +98,15 @@ public class SelectPortfolioView extends FormReplyActivity<FormReplyContext> {
           handlebars.registerHelpers(new HelperSource());
           template = handlebars.compile("portfolio/summary");
           Portfolio p = Database.getPortfolio(user, choice, true);
+          
+          // Make sure user who submitted the form is a client for the portfolio
+          if (p == null) {
+            final String message = "<messageML><div style=\"color:red;\">'" + choice
+                + "' doesn't exist or you are not authorized.</div></messageML>";
+            this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
+            return;
+          }
+
           Context c = ObjectToContext.Convert(new Summary(p));
           this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
         } catch (IOException e) {

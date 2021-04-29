@@ -100,7 +100,15 @@ public class BlockAllocateActivity extends FormReplyActivity<FormReplyContext> {
                     }
                     // Retrieve Portfolio
                     Portfolio p = Database.getPortfolio(user, portName, false);
-
+                    
+                    // Makes sure the person completing the form owns the portfolio
+                    if (p == null) {
+                        final String message = "<messageML><div style=\"color:red;\">'" + portName
+                                + "' doesn't exist or you are not authorized.</div></messageML>";
+                        this.messageService.send(context.getSourceEvent().getStream(),
+                                Message.builder().content(message).build());
+                        return;
+                    }
                     blockList.add(new BlockPortfolio(p, toOrder));
                 }
             }
