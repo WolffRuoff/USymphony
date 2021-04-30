@@ -340,7 +340,7 @@ public class BergBotController {
   }
 
   // Command for a client to view a portfolio summary
-  public void onSlashView(RealTimeEvent<V4MessageSent> context, String[] commandParts) {
+  public void onSlashView(RealTimeEvent<V4MessageSent> context, String[] commandParts) throws IOException {
     V4User user = context.getInitiator().getUser();
 
     // If command is just /portfolio display form
@@ -366,7 +366,27 @@ public class BergBotController {
       // 0 @BergBot
       // 1 command
       // 2 portfolio name
+        String portName = commandParts[2];
+        ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
+        Portfolio p = Database.getPortfolio(user, portName, false);
+        SelectPortfolio portL = new SelectPortfolio("view", portfolioList);
+        if(p==null){
+          final String message = "<messageML><div style=\"color:red;\">'" + portName
+          + "' doesn't exist or you are not authorized.</div></messageML>";
+          this.messageService.send(context.getSource().getMessage().getStream(), Message.builder().content(message).build());
+          return;
+        }
+        try {
+          handlebars.registerHelpers(new HelperSource());
+          this.template = handlebars.compile("summary");
+          Context c = ObjectToContext.Convert(portL);
+          this.messageService.send(context.getSource().getMessage().getStream(), template.apply(c));
+        } catch (JsonProcessingException e) {
+          e.printStackTrace();
+        }
+
+      }
+
 
     }
   }
-}
