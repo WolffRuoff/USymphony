@@ -67,9 +67,16 @@ public class BergBotController {
           onSlashPortfolio(event, msgParts);
         }
         break;
+      case "/summary":
+        if (msgParts.length != 3) {
+          wrongArgs(event, "summary");
+        } else {
+          onSlashSummary(event, msgParts);
+        }
+        break;
       case "/view":
         if (msgParts.length != 3 && msgParts.length != 2) {
-          wrongArgs(event, "portfolio");
+          wrongArgs(event, "view");
         } else {
           onSlashView(event, msgParts);
         }
@@ -83,12 +90,17 @@ public class BergBotController {
     if (choice.equals("buy")) {
       message = message
           + "@BergBot /buy &lt;Portfolio Name&gt; &lt;Ticker&gt; &lt;Amount or Shares&gt; &lt;Quantity&gt;</div></messageML>";
+    } else if (choice.equals("portfolio")) {
+      message = message + "@BergBot /portfolio &lt;Portfolio Name&gt;</div></messageML>";
+    } else if (choice.equals("view")) {
+      message = message + "@BergBot /view &lt;Portfolio Name&gt;</div></messageML>";
+    } else if (choice.equals("summary")) {
+      message = message + "@BergBot /summary &lt;Portfolio Name&gt;</div></messageML>";
     }
     this.messageService.send(event.getSource().getMessage().getStream(), Message.builder().content(message).build());
   }
 
   // Command to view the help list
-<<<<<<< Updated upstream:src/main/java/com/muhlenberg/bot/listeners/BergBotController.java
   public void onSlashHelp(RealTimeEvent<V4MessageSent> context) {
     try {
       this.template = handlebars.compile("help");
@@ -111,13 +123,6 @@ public class BergBotController {
     } catch (IOException e1) {
       e1.printStackTrace();
     }
-=======
-  @Slash(value = "/help", mentionBot = true)
-  public void onSlashHelp(CommandContext context) throws IOException {
-    this.template = handlebars.compile("help");
-    final String userEmail = context.getInitiator().getUser().getEmail();
-        this.messageService.send(context.getStreamId(), template.apply(userEmail));
->>>>>>> Stashed changes:src/main/java/com/muhlenberg/bot/listeners/SlashHandler.java
   }
 
   // Command to buy a new asset for the portfolio
@@ -159,7 +164,6 @@ public class BergBotController {
         // Check if ticker is valid
         try {
           price = YahooFinance.get(ticker).getQuote().getPrice().doubleValue();
-
         }
         // Catch if ticker name is invalid
         catch (IOException | NullPointerException e) {
@@ -241,65 +245,32 @@ public class BergBotController {
   }
 
   // Command to sell an asset for the portfolio
-  /*Under Development
-  public void onSlashSell(CommandContext context) throws IOException {
-    V4User user = context.getInitiator().getUser();
-    String commandParts[] = context.getTextContent().trim().split(" ");
-
-    if (commandParts.length == 2) {
-      // Gather list of portfolios belonging to the user and place in an object
-      ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
-      SelectPortfolio portL = new SelectPortfolio("sell", portfolioList);
-
-      // Try to display selectPortfolio message
-      try {
-        handlebars.registerHelpers(new HelperSource());
-        this.template = handlebars.compile("selectPortfolio");
-        Context c = ObjectToContext.Convert(portL);
-        this.messageService.send(context.getStreamId(), template.apply(c));
-      } catch (JsonProcessingException e) {
-        e.printStackTrace();
-      } catch (IOException e1) {
-        e1.printStackTrace();
-      }
-    }
-    // Otherwise analyze parameters
-    else {
-
-    }
-<<<<<<< Updated upstream:src/main/java/com/muhlenberg/bot/listeners/BergBotController.java
-
-  } */
-=======
-  }
-
-
-
-
-  // Command to create a new portfolio
-  @Slash(value = "/create", mentionBot = true)
-  public void onSlashCreate(CommandContext context) {
-    V4User user = context.getInitiator().getUser();
-
-    try {
-      this.template = handlebars.compile("create/createPortfolio");
-      this.messageService.send(context.getStreamId(), template.apply(user));
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    } catch (IOException e1) {
-      e1.printStackTrace();
-    }
-  }
->>>>>>> Stashed changes:src/main/java/com/muhlenberg/bot/listeners/SlashHandler.java
+  /*
+   * Under Development public void onSlashSell(CommandContext context) throws
+   * IOException { V4User user = context.getInitiator().getUser(); String
+   * commandParts[] = context.getTextContent().trim().split(" ");
+   * 
+   * if (commandParts.length == 2) { // Gather list of portfolios belonging to the
+   * user and place in an object ArrayList<Portfolio> portfolioList =
+   * Database.getPortfolioList(user); SelectPortfolio portL = new
+   * SelectPortfolio("sell", portfolioList);
+   * 
+   * // Try to display selectPortfolio message try {
+   * handlebars.registerHelpers(new HelperSource()); this.template =
+   * handlebars.compile("selectPortfolio"); Context c =
+   * ObjectToContext.Convert(portL);
+   * this.messageService.send(context.getStreamId(), template.apply(c)); } catch
+   * (JsonProcessingException e) { e.printStackTrace(); } catch (IOException e1) {
+   * e1.printStackTrace(); } } // Otherwise analyze parameters else {
+   * 
+   * }
+   * 
+   * }
+   */
 
   // Command to view a portfolio summary or client breakdown
   public void onSlashPortfolio(RealTimeEvent<V4MessageSent> context, String[] commandParts) {
     V4User user = context.getInitiator().getUser();
-<<<<<<< Updated upstream:src/main/java/com/muhlenberg/bot/listeners/BergBotController.java
-=======
-    String commandParts[] = context.getTextContent().trim().split(" ");
-    String portName = commandParts[2];
->>>>>>> Stashed changes:src/main/java/com/muhlenberg/bot/listeners/SlashHandler.java
 
     // If command is just /portfolio display form
     if (commandParts.length == 2) {
@@ -321,61 +292,53 @@ public class BergBotController {
     }
     // Otherwise analyze parameters
     else {
-<<<<<<< Updated upstream:src/main/java/com/muhlenberg/bot/listeners/BergBotController.java
       // 0 @BergBot
       // 1 command
       // 2 portfolio name
-=======
+      String portName = commandParts[2];
       Portfolio p = Database.getPortfolio(user, portName, false);
-      if (p == null) {//if null p 
+
+      // If the portfolio wasn't found
+      if (p == null) {
         final String message = "<messageML><div style=\"color:red;\">'" + portName
             + "' doesn't exist or you are not authorized.</div></messageML>";
-            this.messageService.send(context.getStreamId(), Message.builder().content(message).build());
-            return;
+        this.messageService.send(context.getSource().getMessage().getStream(),
+            Message.builder().content(message).build());
+      } else {
+        try {
+          template = handlebars.compile("portfolio/clientBreakdownOrSummary");
+          this.messageService.send(context.getSource().getMessage().getStream(), template.apply(portName));
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
+    }
+  }
+
+  // Command to view the summary of a portfolio
+  public void onSlashSummary(RealTimeEvent<V4MessageSent> context, String[] commandParts) throws IOException {
+    V4User user = context.getInitiator().getUser();
+    String portName = commandParts[2];
+    Portfolio p = Database.getPortfolio(user, portName, false);
+
+    // Make sure portfolio exists
+    if (p == null) {
+      final String message = "<messageML><div style=\"color:red;\">'" + portName
+          + "' doesn't exist or you are not authorized.</div></messageML>";
+      this.messageService.send(context.getSource().getMessage().getStream(),
+          Message.builder().content(message).build());
+    } else {
       try {
-        template = handlebars.compile("summary");
+        handlebars.registerHelpers(new HelperSource());
+        this.template = handlebars.compile("portfolio/summary");
         Context c = ObjectToContext.Convert(new Summary(p));
-        this.messageService.send(context.getStreamId(), template.apply(c));
-      } catch (IOException e) {
+        this.messageService.send(context.getSource().getMessage().getStream(), template.apply(c));
+      } catch (JsonProcessingException e) {
         e.printStackTrace();
       }
->>>>>>> Stashed changes:src/main/java/com/muhlenberg/bot/listeners/SlashHandler.java
-
-    }
-
-  }
-
-  // Command to create a new portfolio
-  @Slash(value = "/summary", mentionBot = true)
-  public void onSlashSummary(CommandContext context) throws IOException{
-    V4User user = context.getInitiator().getUser();
-    String commandParts[] = context.getTextContent().trim().split(" ");
-    String portName = commandParts[2];
-    if (commandParts.length == 2) {
-      // Gather list of portfolios belonging to the user and place in an object
-      ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
-      SelectPortfolio portL = new SelectPortfolio("view", portfolioList);
-      Portfolio p = Database.getPortfolio(user, portName, false);
-    if(p==null){
-      final String message = "<messageML><div style=\"color:red;\">'" + portName
-      + "' doesn't exist or you are not authorized.</div></messageML>";
-      this.messageService.send(context.getStreamId(), Message.builder().content(message).build());
-      return;
-    }
-
-    
-    try {
-      handlebars.registerHelpers(new HelperSource());
-      this.template = handlebars.compile("summary");
-      Context c = ObjectToContext.Convert(portL);
-      this.messageService.send(context.getStreamId(), template.apply(c));
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
     }
   }
-}
-  
+
   // Command for a client to view a portfolio summary
   public void onSlashView(RealTimeEvent<V4MessageSent> context, String[] commandParts) {
     V4User user = context.getInitiator().getUser();
@@ -405,7 +368,5 @@ public class BergBotController {
       // 2 portfolio name
 
     }
-
   }
-
 }
