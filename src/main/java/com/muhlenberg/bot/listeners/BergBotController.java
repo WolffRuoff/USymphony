@@ -244,30 +244,6 @@ public class BergBotController {
     }
   }
 
-  // Command to sell an asset for the portfolio
-  /*
-   * Under Development public void onSlashSell(CommandContext context) throws
-   * IOException { V4User user = context.getInitiator().getUser(); String
-   * commandParts[] = context.getTextContent().trim().split(" ");
-   * 
-   * if (commandParts.length == 2) { // Gather list of portfolios belonging to the
-   * user and place in an object ArrayList<Portfolio> portfolioList =
-   * Database.getPortfolioList(user); SelectPortfolio portL = new
-   * SelectPortfolio("sell", portfolioList);
-   * 
-   * // Try to display selectPortfolio message try {
-   * handlebars.registerHelpers(new HelperSource()); this.template =
-   * handlebars.compile("selectPortfolio"); Context c =
-   * ObjectToContext.Convert(portL);
-   * this.messageService.send(context.getStreamId(), template.apply(c)); } catch
-   * (JsonProcessingException e) { e.printStackTrace(); } catch (IOException e1) {
-   * e1.printStackTrace(); } } // Otherwise analyze parameters else {
-   * 
-   * }
-   * 
-   * }
-   */
-
   // Command to view a portfolio summary or client breakdown
   public void onSlashPortfolio(RealTimeEvent<V4MessageSent> context, String[] commandParts) {
     V4User user = context.getInitiator().getUser();
@@ -366,27 +342,28 @@ public class BergBotController {
       // 0 @BergBot
       // 1 command
       // 2 portfolio name
-        String portName = commandParts[2];
-        ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
-        Portfolio p = Database.getPortfolio(user, portName, false);
-        SelectPortfolio portL = new SelectPortfolio("view", portfolioList);
-        if(p==null){
-          final String message = "<messageML><div style=\"color:red;\">'" + portName
-          + "' doesn't exist or you are not authorized.</div></messageML>";
-          this.messageService.send(context.getSource().getMessage().getStream(), Message.builder().content(message).build());
-          return;
-        }
+      String portName = commandParts[2];
+      Portfolio p = Database.getPortfolio(user, portName, true);
+      if (p == null) {
+        final String message = "<messageML><div style=\"color:red;\">'" + portName
+            + "' doesn't exist or you are not authorized.</div></messageML>";
+        this.messageService.send(context.getSource().getMessage().getStream(),
+            Message.builder().content(message).build());
+      } else {
         try {
           handlebars.registerHelpers(new HelperSource());
-          this.template = handlebars.compile("summary");
-          Context c = ObjectToContext.Convert(portL);
+          this.template = handlebars.compile("portfolio/summary");
+          Context c = ObjectToContext.Convert(new Summary(p));
           this.messageService.send(context.getSource().getMessage().getStream(), template.apply(c));
         } catch (JsonProcessingException e) {
           e.printStackTrace();
         }
-
       }
-
-
     }
   }
+
+  //Commands Under Development
+  // /sell - Sell an asset
+  // /client - Add or remove clients from a portfolio and/or add amount to an already existing client
+  // /updates - Set up a reminder to receive updates on your portfolios
+}

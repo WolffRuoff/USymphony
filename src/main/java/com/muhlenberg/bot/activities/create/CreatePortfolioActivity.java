@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
@@ -65,11 +64,9 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
     if (clients.size() > 0) {
 
       // Sends user new form to input client amounts
-      Context c;
       try {
         template = handlebars.compile("addClients");
-        c = ObjectToContext.Convert(new AddClients(name, ticker, clients));
-        this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+        this.messageService.send(context.getSourceEvent().getStream(), template.apply(ObjectToContext.Convert(new AddClients(name, ticker, clients))));
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -78,10 +75,10 @@ public class CreatePortfolioActivity extends FormReplyActivity<FormReplyContext>
       // Create portfolio and add it to the database
       final Portfolio p = new Portfolio(name, 0, 1.0D, new HashMap<Long, Double>(), new HashMap<Stock, Double>(),
           ticker);
-      Database.addPortfolio(context.getInitiator().getUser(), p);
+      String finalName = Database.addPortfolio(context.getInitiator().getUser(), p);
 
       // Send confirmation message
-      final String message = "<messageML>Created '" + name + "' Portfolio</messageML>";
+      final String message = "<messageML>Created '" + finalName + "' Portfolio</messageML>";
       this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
     }
   }

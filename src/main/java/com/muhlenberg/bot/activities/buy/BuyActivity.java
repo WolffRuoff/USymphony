@@ -122,7 +122,7 @@ public class BuyActivity extends FormReplyActivity<FormReplyContext> {
 
   @Override
   protected ActivityInfo info() {
-    return new ActivityInfo().type(ActivityType.FORM).name("Name of the Portfolio")
+    return new ActivityInfo().type(ActivityType.FORM).name("Buy Asset for Portfolio")
         .description("\"Form handler for the buyActivity form\"");
   }
 

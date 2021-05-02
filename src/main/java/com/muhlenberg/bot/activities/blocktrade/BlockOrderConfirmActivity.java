@@ -36,7 +36,7 @@ public class BlockOrderConfirmActivity extends FormReplyActivity<FormReplyContex
     public void onActivity(FormReplyContext context) {
         V4User user = context.getInitiator().getUser();
 
-        // Retrieve their choices
+        // Retrieve the ticker and price
         String ticker = context.getFormValue("ticker");
         Double price = Double.parseDouble(context.getFormValue("price"));
 

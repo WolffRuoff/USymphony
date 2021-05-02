@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
@@ -70,7 +69,7 @@ public class BlockAllocateActivity extends FormReplyActivity<FormReplyContext> {
             String portName;
             Double maxP;
             Double toOrder;
-            Double percentOrdered = 0.0; // Total percent allocated
+            Double percentOrdered = 0.0;
             Double emptyCount = 0.0;
             while (ports.hasNext()) {
                 java.util.Map.Entry<String, JsonNode> portNode = ports.next();
@@ -137,21 +136,17 @@ public class BlockAllocateActivity extends FormReplyActivity<FormReplyContext> {
                     portList.add(block.getPortfolio());
                 }
                 BlockOrderDetails orderDets = new BlockOrderDetails(portList, ticker, shares, price, orderAmount);
-
                 final String message = "<messageML><div style=\"color: red;\">You ordered too much for at least one portfolio!</div></messageML>";
                 this.messageService.send(context.getSourceEvent().getStream(),
                         Message.builder().content(message).build());
                 template = handlebars.compile("blockAllocation");
-                Context c = ObjectToContext.Convert(orderDets);
-                this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+                this.messageService.send(context.getSourceEvent().getStream(), template.apply(ObjectToContext.Convert(orderDets)));
             }
             // Create and send the order confirmation!
             else {
-                // Create object for order details
                 BlockOrderDetails orderDets = new BlockOrderDetails(blockList, ticker, shares, price, orderAmount, 0);
                 template = handlebars.compile("blockOrderConfirmation");
-                Context c = ObjectToContext.Convert(orderDets);
-                this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+                this.messageService.send(context.getSourceEvent().getStream(), template.apply(ObjectToContext.Convert(orderDets)));
             }
         }
 
@@ -161,12 +156,9 @@ public class BlockAllocateActivity extends FormReplyActivity<FormReplyContext> {
                 final String message = "<messageML>'" + ticker + "' name was invalid. Please try again.</messageML>";
                 this.messageService.send(context.getSourceEvent().getStream(),
                         Message.builder().content(message).build());
-
                 template = handlebars.compile("blockTrade");
-                ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
-                SelectPortfolio portL = new SelectPortfolio("blockTrade", portfolioList);
-                Context c = ObjectToContext.Convert(portL);
-                this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+                SelectPortfolio portL = new SelectPortfolio("blockTrade", Database.getPortfolioList(user));
+                this.messageService.send(context.getSourceEvent().getStream(), template.apply(ObjectToContext.Convert(portL)));
             } catch (IOException e) {
                 e.printStackTrace();
             }

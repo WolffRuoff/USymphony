@@ -2,7 +2,6 @@ package com.muhlenberg.bot.activities;
 
 import java.io.IOException;
 
-import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
@@ -98,7 +97,7 @@ public class SelectPortfolioView extends FormReplyActivity<FormReplyContext> {
           handlebars.registerHelpers(new HelperSource());
           template = handlebars.compile("portfolio/summary");
           Portfolio p = Database.getPortfolio(user, choice, true);
-          
+
           // Make sure user who submitted the form is a client for the portfolio
           if (p == null) {
             final String message = "<messageML><div style=\"color:red;\">'" + choice
@@ -107,19 +106,18 @@ public class SelectPortfolioView extends FormReplyActivity<FormReplyContext> {
             return;
           }
 
-          Context c = ObjectToContext.Convert(new Summary(p));
-          this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+          this.messageService.send(context.getSourceEvent().getStream(),
+              template.apply(ObjectToContext.Convert(new Summary(p))));
         } catch (IOException e) {
           e.printStackTrace();
         }
       }
     }
-
   }
 
   @Override
   protected ActivityInfo info() {
-    return new ActivityInfo().type(ActivityType.FORM).name("Name of the Portfolio")
-        .description("\"Form handler for the Create Portfolio form\"");
+    return new ActivityInfo().type(ActivityType.FORM).name("Select Portfolio Activity")
+        .description("\"Form handler that sends you to the correct form based on the command\"");
   }
 }

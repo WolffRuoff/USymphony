@@ -2,7 +2,6 @@ package com.muhlenberg.bot.activities.portfolio;
 
 import java.io.IOException;
 
-import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
@@ -54,7 +53,7 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
     String choice = context.getFormValue("options");
     String portName = context.getFormValue("portfolio");
     Portfolio p = Database.getPortfolio(user, portName, false);
-    // Make sure user who submitted the form owns the portfolio
+    // Make sure the user who submitted the form owns the portfolio
     if (p == null) {
       final String message = "<messageML><div style=\"color:red;\">'" + portName
           + "' doesn't exist or you are not authorized.</div></messageML>";
@@ -65,8 +64,8 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
     if (choice.equals("summary")) {
       try {
         template = handlebars.compile("summary");
-        Context c = ObjectToContext.Convert(new Summary(p));
-        this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+        this.messageService.send(context.getSourceEvent().getStream(),
+            template.apply(ObjectToContext.Convert(new Summary(p))));
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -75,18 +74,18 @@ public class BreakdownOrSummary extends FormReplyActivity<FormReplyContext> {
         template = handlebars.compile("clientBreakdown");
         p.rebalancePortfolio();
         ClientList clients = new ClientList(p.getClientBreakdown(), p.getSize());
-        this.messageService.send(context.getSourceEvent().getStream(), template.apply(ObjectToContext.Convert(clients)));
+        this.messageService.send(context.getSourceEvent().getStream(),
+            template.apply(ObjectToContext.Convert(clients)));
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
-
   }
 
   @Override
   protected ActivityInfo info() {
-    return new ActivityInfo().type(ActivityType.FORM).name("Name of the Portfolio")
-        .description("\"Form handler for the Create Portfolio form\"");
+    return new ActivityInfo().type(ActivityType.FORM).name("Breakdown or Summary Activity")
+        .description("\"Form handler for the Breakdown or Summary form\"");
   }
 
 }

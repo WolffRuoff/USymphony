@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
@@ -82,10 +81,10 @@ public class AddClientsActivity extends FormReplyActivity<FormReplyContext> {
 
         // Create portfolio and add it to the database
         final Portfolio p = new Portfolio(name, size, 1.0D, clients, new HashMap<Stock, Double>(), ticker);
-        Database.addPortfolio(context.getInitiator().getUser(), p);
+        String finalName = Database.addPortfolio(context.getInitiator().getUser(), p);
 
         // Send confirmation message
-        String message = "<messageML>Created '" + name + "' Portfolio</messageML>";
+        String message = "<messageML>Created '" + finalName + "' Portfolio</messageML>";
         this.messageService.send(context.getSourceEvent().getStream(), Message.builder().content(message).build());
 
         // Check if bot should notify clients
@@ -94,12 +93,11 @@ public class AddClientsActivity extends FormReplyActivity<FormReplyContext> {
             try {
                 template = handlebars.compile("clientWelcome");
                 for (Entry<Long, Double> entry : clientsAm.entrySet()) {
-                    client = new Client(entry.getKey(), entry.getValue(), name);
-                    Context c = ObjectToContext.Convert(client);
+                    client = new Client(entry.getKey(), entry.getValue(), finalName);
                     
                     //Create new stream
                     Stream stream = this.streamService.create(entry.getKey());
-                    this.messageService.send(stream.getId(), template.apply(c));
+                    this.messageService.send(stream.getId(), template.apply(ObjectToContext.Convert(client)));
                     
                 }
             } catch (IOException e) {

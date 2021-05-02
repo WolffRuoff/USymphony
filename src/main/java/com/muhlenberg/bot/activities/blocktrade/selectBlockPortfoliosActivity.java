@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
@@ -91,24 +90,26 @@ public class selectBlockPortfoliosActivity extends FormReplyActivity<FormReplyCo
 
             // Create object for order details
             BlockOrderDetails orderDets = new BlockOrderDetails(portList, ticker, shares, price, orderAmount);
-            //Make sure portfolios have enough liquid assets for the purchase
+            // Make sure portfolios have enough liquid assets for the purchase
             if (orderDets.getTotalPurchasePower() >= orderAmount) {
                 // Convert to context and send order confirmation
                 template = handlebars.compile("blockAllocation");
-                Context c = ObjectToContext.Convert(orderDets);
-                this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
-            }
-            else {
+                this.messageService.send(context.getSourceEvent().getStream(),
+                        template.apply(ObjectToContext.Convert(orderDets)));
+            } else {
+                // Try sending error message because the portfolios don't have enough money for
+                // the orderAmount
                 try {
-                    final String message = "<messageML>These portfolios only have $" + orderDets.getTotalPurchasePower() + " of liquid assets. <br/> Please lower the order amount or add more portfolios.</messageML>";
+                    final String message = "<messageML>These portfolios only have $" + orderDets.getTotalPurchasePower()
+                            + " of liquid assets. <br/> Please lower the order amount or add more portfolios.</messageML>";
                     this.messageService.send(context.getSourceEvent().getStream(),
                             Message.builder().content(message).build());
-    
+                    // Resend form
                     template = handlebars.compile("blockTrade");
                     ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
                     SelectPortfolio portL = new SelectPortfolio("blockTrade", portfolioList);
-                    Context c = ObjectToContext.Convert(portL);
-                    this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+                    this.messageService.send(context.getSourceEvent().getStream(),
+                            template.apply(ObjectToContext.Convert(portL)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -122,11 +123,12 @@ public class selectBlockPortfoliosActivity extends FormReplyActivity<FormReplyCo
                 this.messageService.send(context.getSourceEvent().getStream(),
                         Message.builder().content(message).build());
 
+                // Resend form
                 template = handlebars.compile("blockTrade");
                 ArrayList<Portfolio> portfolioList = Database.getPortfolioList(user);
                 SelectPortfolio portL = new SelectPortfolio("blockTrade", portfolioList);
-                Context c = ObjectToContext.Convert(portL);
-                this.messageService.send(context.getSourceEvent().getStream(), template.apply(c));
+                this.messageService.send(context.getSourceEvent().getStream(),
+                        template.apply(ObjectToContext.Convert(portL)));
             } catch (IOException e) {
                 e.printStackTrace();
             }

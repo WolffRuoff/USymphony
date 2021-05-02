@@ -68,7 +68,7 @@ public class Database {
         }
     }
 
-    public static void addPortfolio(V4User userID, Portfolio port) {
+    public static String addPortfolio(V4User userID, Portfolio port) {
         // Create table (won't do anything if it already exists)
         createNewPortTable();
         createNewClientPortTable();
@@ -85,6 +85,7 @@ public class Database {
         if (i > 0) {
             port.setName(port.getName() + i);
         }
+        String newName = port.getName();
 
         // SQL statement for adding a portfolio
         String sql = "INSERT INTO portfoliolist (userid, portfolio) VALUES(?,?)";
@@ -106,6 +107,7 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        return newName;
     }
 
     public static void placeOrder(V4User userID, Portfolio newPort, String ticker, Double shares, Double price,
