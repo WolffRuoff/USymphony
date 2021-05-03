@@ -3,13 +3,13 @@ package com.muhlenberg.bot;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Handlebars.SafeString;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
 public class HelperSource {
     private static final List<String> colours = List.of("#3d85c6", "#e69138", "#a64d79", "#6aa84f");
+
 
     public boolean isPos(double context) {
         if (context > 0 ) {
@@ -30,6 +30,8 @@ public class HelperSource {
         return false;
     }
 
+
+    //Create a pie chart based on values from 0.0-1.0 and 1-100
     public SafeString pieChart(double value) {
         String fillStyle = "";
         int size = 7;
@@ -49,7 +51,7 @@ public class HelperSource {
         return new Handlebars.SafeString(String.format(pieChart, size, size, fillStyle));
         }
 
-
+    // Gains method to determine is pos or neg gains
     public SafeString gains(String value) {
 
     String formatting; 
@@ -84,7 +86,7 @@ public class HelperSource {
         return new Handlebars.SafeString(String.format(progressBar, percentage));
     };
 
-
+    //Rounding method for returning final values formatted and rounded
     public SafeString round(int decimal, double value) {
         /* String times = "1";
         for (int i = 0; i < decimal; i++) {
@@ -96,7 +98,7 @@ public class HelperSource {
         return new Handlebars.SafeString(rounder.format(value));
     };
 
-
+    //Overall % change method for stocks
     public SafeString getChange(int decimal, double current, double purchase) {
         String outputString;
         String times = "1";
@@ -104,14 +106,14 @@ public class HelperSource {
             times = times + "0";        
         }
 
-        DecimalFormat df = new DecimalFormat("#."+('0'*decimal));
         double val = (current - purchase) / purchase;
+        SafeString v2 = round(decimal, val);
 
         if (val > 0) {
-            outputString = "<emoji shortcode = \"chart_with_upwards_trend\"/>  <span style=\"color:green;\"> +"+df.format(val) +"% </span>";
+            outputString = "<emoji shortcode = \"chart_with_upwards_trend\"/>  <span style=\"color:green;\"> +"+ v2 +"% </span>";
         }
         else if (val < 0) {
-            outputString = "<emoji shortcode = \"chart_with_downwards_trend\"/>  <span style=\"color:red;\">"+df.format(val) + "% </span>";
+            outputString = "<emoji shortcode = \"chart_with_downwards_trend\"/>  <span style=\"color:red;\">"+ v2 + "% </span>";
         }
         else {
             outputString = "No Change";
@@ -119,6 +121,4 @@ public class HelperSource {
 
         return new Handlebars.SafeString(outputString);
     };
-
-    // Other helper methods
 }

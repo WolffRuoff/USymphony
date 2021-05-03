@@ -39,18 +39,18 @@ public class Portfolio implements java.io.Serializable {
     }
 
     // Provide method to update stock changes. Should be called every time the
-    // change is checked. Needed so that top5 and bottom5 changes will still work.
+    // change is checked. 
     public void updateStocks() throws IOException {
         // Check if portfolio has no assets
         if (this.assets.size() == 0) {
             return;
         }
 
+        // Get list of stocks to update
         ArrayList<String> updateVals = new ArrayList<String>();
         for (Stock stock : assets.keySet()) {
             updateVals.add(stock.getSymbol());
         }
-        // Get list of stocks to update
         String[] symbols = updateVals.toArray(new String[updateVals.size()]);
         // Get new stock valuations
         Map<String, yahoofinance.Stock> stocks = YahooFinance.get(symbols);
@@ -61,7 +61,7 @@ public class Portfolio implements java.io.Serializable {
             stock.setChange(stocks.get(stock.getSymbol()).getQuote().getChangeInPercent().doubleValue());
         }
     }
-
+    // Calculates the unrealized gains of the portfolio
     public double getUnrealized() {
         double val = 0.0;
         for (Map.Entry<Stock, Double> entry : assets.entrySet()) {
@@ -73,7 +73,7 @@ public class Portfolio implements java.io.Serializable {
 
         return val;
     }
-
+    // Calculates the overall value of all assets in the portfolio - cash
     public double getEvaluation() {
 
         double val = 0.0;
@@ -85,7 +85,7 @@ public class Portfolio implements java.io.Serializable {
         return val;
 
     }
-
+    // Return array of bottom 5 stocks for daily change
     public Stock[] getBottom5() {
         ArrayList<Stock> list = new ArrayList<Stock>();
         for (Stock key : assets.keySet()) {
@@ -111,7 +111,7 @@ public class Portfolio implements java.io.Serializable {
         }
     }
 
-    // change so that top movers are not also in bottom movers.
+    // Return array of top 5 stock for daily change
     public Stock[] getTop5() {
         ArrayList<Stock> list = new ArrayList<Stock>();
         for (Stock key : assets.keySet()) {
@@ -190,7 +190,6 @@ public class Portfolio implements java.io.Serializable {
 
     }
 
-    // Absolutely critical to override and return stock array. DO NOT DELETE
     public Stock[] getAssets() {
         int i = 0;
         Stock[] arr = new Stock[assets.size()];

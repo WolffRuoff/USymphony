@@ -51,13 +51,13 @@
 
             {{/each}}
 
-        </tbody>
 
-    </table>
-    <h3> Top 5 Losers:</h3>
-    <table>
+    <tr>
+        <td> 
+            <h3> Top 5 Losers:</h3>
+        </td>
+    </tr>
             
-        <thead>
                     
         <tr>
                             
@@ -72,11 +72,7 @@
             <td> Overall Change: </td>
                         
         </tr>
-                
-        </thead>
-
-        <tbody>
-            
+                            
             {{#each bottom10Stocks}}
             
             <tr>            
@@ -115,7 +111,7 @@
             </td>
 
             <td style="border: none;"> 
-                <div style="margin-top:6%">
+                <div style="margin-top:4%">
                     <h2>
                         {{#if (isPos compPercent)}} 
                             This Portfolio Is Exceeding {{comparisonTicker}} by <span style="color:green;"> +{{compPercent}}% </span> 
