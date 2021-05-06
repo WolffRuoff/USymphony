@@ -28,7 +28,7 @@ import yahoofinance.quotes.stock.StockQuote;
  */
 public class Database {
     /**
-     * Connect to a sample database
+     * Connect to the database
      */
     private static Connection connect() {
         // SQLite connection string
