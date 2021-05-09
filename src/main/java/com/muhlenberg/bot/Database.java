@@ -22,10 +22,6 @@ import com.symphony.bdk.gen.api.model.V4User;
 import yahoofinance.YahooFinance;
 import yahoofinance.quotes.stock.StockQuote;
 
-/**
- *
- * @author sqlitetutorial.net
- */
 public class Database {
     /**
      * Connect to the database
@@ -247,12 +243,10 @@ public class Database {
     // Serializes portfolio to bytes
     public static byte[] makeByte(Portfolio port) {
         try {
-
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(port);
             byte[] portfolioAsBytes = baos.toByteArray();
-            //ByteArrayInputStream bais = new ByteArrayInputStream(portfolioAsBytes);
             return portfolioAsBytes;
         } catch (IOException e) {
             e.printStackTrace();
